@@ -1,63 +1,43 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import useAuth from './hooks/useAuth';
+import usePosts from './hooks/usePosts';
+import useUser from './hooks/useUser';
+import PostItem from './components/PostItem';
 
 function App() {
-  const [user, setUser] = useState(null);
-  const [posts, setPosts] = useState([]);
-  const [authForm, setAuthForm] = useState({ email: '', password: '' });
+  const {
+    user,
+    authForm,
+    setAuthForm,
+    loading: authLoading,
+    error: authError,
+    register,
+    login,
+  } = useAuth();
   const [postText, setPostText] = useState('');
   const [file, setFile] = useState(null);
-
-  const fetchPosts = async () => {
-    const res = await fetch('http://localhost:3000/posts');
-    const data = await res.json();
-    setPosts(data);
-  };
-
-  useEffect(() => {
-    fetchPosts();
-  }, []);
-
-  const register = async () => {
-    const res = await fetch('http://localhost:3000/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(authForm),
-    });
-    const data = await res.json();
-    setUser(data);
-  };
-
-  const login = async () => {
-    const res = await fetch('http://localhost:3000/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(authForm),
-    });
-    const data = await res.json();
-    if (!data.error) {
-      setUser(data);
-    }
-  };
+  const {
+    posts,
+    loading: postsLoading,
+    error: postsError,
+    createPost,
+    likePost,
+    addComment,
+  } = usePosts(user);
+  const { profile } = useUser(user?.id);
 
   const submitPost = async (e) => {
     e.preventDefault();
-    if (!user) return;
-    const formData = new FormData();
-    formData.append('userId', user.id);
-    formData.append('text', postText);
-    if (file) formData.append('file', file);
-    await fetch('http://localhost:3000/posts', {
-      method: 'POST',
-      body: formData,
-    });
+    await createPost({ text: postText, file });
     setPostText('');
     setFile(null);
-    await fetchPosts();
   };
 
   return (
     <div className="p-4 space-y-4">
       <h1 className="text-2xl font-bold">bojex.online</h1>
+      {authError && <p className="text-red-500">{authError}</p>}
+      {authLoading && <p>Loading...</p>}
       {!user ? (
         <div className="space-y-2">
           <input
@@ -86,7 +66,7 @@ function App() {
         </div>
       ) : (
         <div className="space-y-2">
-          <p>Logged in as {user.email}</p>
+          <p>Logged in as {profile?.email || user.email}</p>
           <form onSubmit={submitPost} className="space-y-2">
             <input
               className="border p-1 w-full"
@@ -104,23 +84,25 @@ function App() {
           </form>
         </div>
       )}
-      <div className="space-y-4">
-        {posts.map((p) => (
-          <div key={p.id} className="border p-2">
-            <p>{p.text}</p>
-            {p.media && (
-              <img
-                src={`http://localhost:3000/${p.media}`}
-                alt="media"
-                className="max-w-xs"
-              />
-            )}
-            <p>Likes: {p.likes.length}</p>
-          </div>
-        ))}
-      </div>
+      {postsError && <p className="text-red-500">{postsError}</p>}
+      {postsLoading ? (
+        <p>Loading posts...</p>
+      ) : (
+        <div className="space-y-4">
+          {posts.map((p) => (
+            <PostItem
+              key={p.id}
+              post={p}
+              user={user}
+              onLike={likePost}
+              onComment={addComment}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
 
 export default App;
+
