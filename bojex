@@ -1,0 +1,133 @@
+Build a full-stack web application called **bojex.online** using the following stack:
+
+## 🌐 Overview
+
+bojex.online is a modern content-sharing platform where users can upload and interact with:
+- 🎮 Gaming clips
+- 😂 Memes
+- 💻 Tech articles and tips
+- 🎲 Random fun content
+
+## 📦 Stack
+
+- **Frontend:** React (with TailwindCSS, Axios, React Router, Zustand or Redux Toolkit)
+- **Backend:** NestJS (with Mongoose for MongoDB)
+- **Database:** MongoDB (Atlas or local)
+- **Media Storage:** Cloudinary or local via Multer
+
+## 🎯 Requirements
+
+### 🔐 Authentication
+- Register/Login with email & password
+- Google and Discord OAuth integration
+- JWT-based auth, with guards for protected routes
+
+### 📼 Media Upload & Post System
+- Users can upload:
+  - Videos (gaming clips, max 1 min)
+  - Images/GIFs (memes)
+  - Tech posts (Markdown or WYSIWYG editor)
+- Store metadata (title, description, tags, type)
+- Auto-generate video thumbnails
+- Posts have likes, comments, views
+
+### 🧑‍💻 User System
+- Public profile with avatar, bio, social links
+- Followers / Following system
+- Display user posts and stats
+
+### 💬 Comments & Reactions
+- Nested comments with reply
+- Like/unlike posts and comments
+- Report inappropriate content
+
+### 🔍 Explore/Feed/Search
+- Infinite scroll feed
+- Trending, Recent, Top views
+- Filter by category/tags/game
+- Search by title, tags, or username
+
+### 🛠 Admin Dashboard
+- Moderate posts/comments
+- Ban users
+- Analytics dashboard (views, uploads, likes)
+
+## 📁 Suggested Folder Structure
+
+### Backend (NestJS)
+src/
+auth/
+users/
+posts/
+comments/
+admin/
+common/
+config/
+
+shell
+Copy
+Edit
+
+### Frontend (React)
+src/
+components/
+pages/
+hooks/
+services/
+state/
+utils/
+App.jsx
+
+shell
+Copy
+Edit
+
+## 📄 Sample Schemas (MongoDB)
+
+### User
+```ts
+{
+  username, email, passwordHash, avatarUrl, bio, socialLinks,
+  followers: [userId], following: [userId],
+  createdAt, updatedAt
+}
+Post
+ts
+Copy
+Edit
+{
+  type: "clip" | "meme" | "tech",
+  title, description, mediaUrl, thumbnailUrl,
+  tags: [String], category: String,
+  user: ObjectId,
+  likes: [ObjectId],
+  comments: [ObjectId],
+  views, createdAt
+}
+🔄 API Endpoints (NestJS)
+POST /auth/register
+
+POST /auth/login
+
+POST /posts/upload
+
+GET /posts?type=clip
+
+GET /posts/:id
+
+POST /posts/:id/comments
+
+PUT /admin/post/:id/moderate
+
+etc.
+
+✅ Bonus Features
+Real-time comments (WebSockets)
+
+Notifications
+
+Post scheduling
+
+NSFW flagging
+
+Verified users
