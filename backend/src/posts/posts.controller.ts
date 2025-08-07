@@ -12,6 +12,8 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PostsService } from './posts.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 
 @Controller('posts')
 export class PostsController {
@@ -24,7 +26,25 @@ export class PostsController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FileInterceptor('file', { dest: 'uploads/' }))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: process.env.UPLOAD_DIR || 'uploads',
+        filename: (_req, file, cb) => {
+          const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          cb(null, unique + extname(file.originalname));
+        },
+      }),
+      fileFilter: (_req, file, cb) => {
+        const allowed = ['image/jpeg', 'image/png', 'image/gif'];
+        if (allowed.includes(file.mimetype)) {
+          cb(null, true);
+        } else {
+          cb(new Error('Invalid file type'), false);
+        }
+      },
+    }),
+  )
   create(
     @Req() req,
     @Body() body: { text: string },

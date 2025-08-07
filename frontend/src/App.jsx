@@ -1,4 +1,11 @@
 import { useState, useEffect } from 'react';
+import {
+  register as apiRegister,
+  login as apiLogin,
+  fetchPosts as apiFetchPosts,
+  createPost as apiCreatePost,
+  likePost as apiLikePost,
+} from './api';
 
 function App() {
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
@@ -11,6 +18,8 @@ function App() {
   const [authForm, setAuthForm] = useState({ email: '', password: '' });
   const [postText, setPostText] = useState('');
   const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     localStorage.setItem('token', token);
@@ -25,8 +34,7 @@ function App() {
   }, [user]);
 
   const fetchPosts = async () => {
-    const res = await fetch(`${API_URL}/posts`);
-    const data = await res.json();
+    const data = await apiFetchPosts();
     setPosts(data);
   };
 
@@ -35,50 +43,50 @@ function App() {
   }, []);
 
   const register = async () => {
-    const res = await fetch(`${API_URL}/auth/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(authForm),
-    });
-    const data = await res.json();
+    setLoading(true);
+    setError('');
+    const data = await apiRegister(authForm);
+    setLoading(false);
     if (data.token) {
       setUser(data.user);
       setToken(data.token);
+    } else if (data.error) {
+      setError(data.error);
     }
   };
 
   const login = async () => {
-    const res = await fetch(`${API_URL}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(authForm),
-    });
-    const data = await res.json();
+    setLoading(true);
+    setError('');
+    const data = await apiLogin(authForm);
+    setLoading(false);
     if (data.token) {
       setUser(data.user);
       setToken(data.token);
+    } else if (data.error) {
+      setError(data.error);
     }
   };
 
   const submitPost = async (e) => {
     e.preventDefault();
     if (!user) return;
-    const formData = new FormData();
-    formData.append('text', postText);
-    if (file) formData.append('file', file);
-    await fetch(`${API_URL}/posts`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
-      body: formData,
-    });
+    await apiCreatePost(token, postText, file);
     setPostText('');
     setFile(null);
+    await fetchPosts();
+  };
+
+  const like = async (id) => {
+    if (!user) return;
+    await apiLikePost(token, id);
     await fetchPosts();
   };
 
   return (
     <div className="p-4 space-y-4">
       <h1 className="text-2xl font-bold">bojex.online</h1>
+      {error && <p className="text-red-500">{error}</p>}
       {!user ? (
         <div className="space-y-2">
           <input
@@ -97,11 +105,19 @@ function App() {
             }
           />
           <div className="space-x-2">
-            <button className="px-2 py-1 bg-blue-500 text-white" onClick={register}>
-              Register
+            <button
+              className="px-2 py-1 bg-blue-500 text-white"
+              onClick={register}
+              disabled={loading}
+            >
+              {loading ? '...' : 'Register'}
             </button>
-            <button className="px-2 py-1 bg-green-500 text-white" onClick={login}>
-              Login
+            <button
+              className="px-2 py-1 bg-green-500 text-white"
+              onClick={login}
+              disabled={loading}
+            >
+              {loading ? '...' : 'Login'}
             </button>
           </div>
         </div>
@@ -119,8 +135,9 @@ function App() {
             <button
               type="submit"
               className="px-2 py-1 bg-purple-500 text-white"
+              disabled={loading}
             >
-              Post
+              {loading ? 'Posting...' : 'Post'}
             </button>
           </form>
         </div>
@@ -137,6 +154,14 @@ function App() {
               />
             )}
             <p>Likes: {p.likes.length}</p>
+            {user && (
+              <button
+                className="mt-1 px-2 py-1 bg-pink-500 text-white"
+                onClick={() => like(p.id)}
+              >
+                Like
+              </button>
+            )}
           </div>
         ))}
       </div>
