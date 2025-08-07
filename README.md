@@ -1,116 +1,122 @@
 # bojex.online
 
-## Project Overview
-bojex.online is a lightweight prototype for a social content sharing platform.  It lets people register, log in and publish short posts with optional image or video attachments.  Other users can like posts, leave comments and follow each other.  The project is split into a NestJS backend and a React + Vite frontend and currently stores data in memory with uploaded files written to disk.
+## 📌 Project Overview
+**bojex.online** is a minimalist social platform. Users can register, log in and publish short posts with optional image or video attachments. Other users can like posts, leave comments and follow each other. The stack consists of a [NestJS](https://nestjs.com/) backend connected to MongoDB and a [React](https://react.dev/) + [Vite](https://vitejs.dev/) frontend. Media files are stored on disk and exposed as static assets.
 
-## Project Structure
+## 🧱 Project Structure
 | Path | Description |
 |------|-------------|
-| `backend/` | [NestJS](https://nestjs.com/) API server and file uploads. |
-| `backend/uploads/` | Uploaded media files served as static assets. |
-| `frontend/` | [React](https://react.dev/) SPA built with [Vite](https://vitejs.dev/). |
+| `backend/` | NestJS API server, authentication, posts, likes, comments and user modules. |
+| `backend/uploads/` | Uploaded media files served under `/uploads`. |
+| `frontend/` | React single-page application built with Vite. |
+| `frontend/dist/` | Production build output after `npm run build`. |
 
-## Installation
+## ⚙️ Installation Guide
 ### Prerequisites
 - Node.js **18+** and npm
+- Local [MongoDB](https://www.mongodb.com/) instance (default connection: `mongodb://localhost/bojex`)
 - Git
 
-### Clone the repository
+### 1. Clone the repository
 ```bash
 git clone <REPO_URL>
 cd bojex.online
 ```
 
-### Backend Setup
-1. Install dependencies
-   ```bash
-   cd backend
-   npm install
-   ```
-2. (Optional) create a `.env` file to override defaults
-   ```env
-   PORT=3000        # HTTP port the API listens on
-   UPLOAD_DIR=uploads # Directory for uploaded files
-   ```
-3. Start the server
-   ```bash
-   npm start
-   ```
-   The API becomes available on **http://localhost:3000** and serves files from `/uploads`.
+### 2. Backend setup
+```bash
+cd backend
+npm install
+```
+Create a `.env` file (optional – values shown are defaults):
+```env
+PORT=3000                # HTTP port for the API
+MONGODB_URI=mongodb://localhost/bojex # MongoDB connection string
+JWT_SECRET=secret        # JWT signing key
+UPLOAD_DIR=uploads       # Directory for uploaded media
+```
+Start MongoDB, then run the server:
+```bash
+npm start
+```
+The API listens on **http://localhost:3000** and exposes uploaded files at `http://localhost:3000/uploads/*`.
 
-### Frontend Setup
-1. Install dependencies
-   ```bash
-   cd frontend
-   npm install
-   ```
-2. (Optional) create a `.env` file
-   ```env
-   VITE_API_URL=http://localhost:3000 # Base URL of the backend API
-   ```
-3. Start the dev server
-   ```bash
-   npm run dev
-   ```
-   Vite runs on **http://localhost:5173**.
+### 3. Frontend setup
+```bash
+cd ../frontend
+npm install
+```
+Create `.env` (optional):
+```env
+VITE_API_URL=http://localhost:3000 # Base URL of the backend
+```
+Start the Vite dev server:
+```bash
+npm run dev
+```
+The SPA is available at **http://localhost:5173**. Start the backend before the frontend so API calls succeed.
 
-To build the production bundle:
+### 4. Build for production
 ```bash
 npm run build
 ```
-The static files will be output to `frontend/dist/`.
+The optimized bundle is emitted to `frontend/dist/`.
 
-## Usage & Features
-1. Visit the frontend in a browser.
-2. **Register** or **log in** with an email and password.
+## 🧪 Usage & Features
+1. Open the frontend in your browser.
+2. **Register** a new account or **log in** with an existing one.
 3. After authentication you can:
-   - Publish posts with text and optional media files.
-   - Like and comment on posts.
-   - View your profile data including follower/following counts.
-   - Follow or unfollow other users (currently via API calls).
+   - Create posts with text and optional media uploads (JPEG, PNG, GIF, MP4 up to 10 MB).
+   - Like posts, add comments and view a live like/comment count.
+   - View your profile including follower/following counts.
+   - Follow or unfollow other users.
 
-Uploads are saved under `backend/uploads/` and can be accessed at `http://localhost:3000/uploads/<filename>`.
+## 🔗 API Reference
+All JSON endpoints return `application/json`. Routes marked with 🔐 require an `Authorization: Bearer <token>` header.
 
-## API Reference
 ### Authentication
 | Method & Route | Body | Description |
 |----------------|------|-------------|
 | `POST /auth/register` | `{ email, password }` | Create a new account. |
-| `POST /auth/login` | `{ email, password }` | Authenticate a user. |
-| `GET /auth/google` | – | Placeholder for Google OAuth. |
-| `GET /auth/discord` | – | Placeholder for Discord OAuth. |
+| `POST /auth/login` | `{ email, password }` | Obtain JWT token and user info. |
+| `GET /auth/google` | – | Placeholder for future Google OAuth. |
+| `GET /auth/discord` | – | Placeholder for future Discord OAuth. |
 
 ### Users
 | Method & Route | Body | Description |
 |----------------|------|-------------|
-| `GET /users/:id` | – | Retrieve public profile info. |
-| `POST /users/:id/follow` | `{ followerId }` | Follow a user. |
-| `POST /users/:id/unfollow` | `{ followerId }` | Unfollow a user. |
+| `GET /users/:id` | – | Retrieve public profile data. |
+| `POST /users/:id/follow` | `{ followerId }` | Current user follows `:id`. |
+| `POST /users/:id/unfollow` | `{ followerId }` | Current user unfollows `:id`. |
 
 ### Posts
 | Method & Route | Body | Description |
 |----------------|------|-------------|
 | `GET /posts` | – | List all posts. |
-| `POST /posts` | `multipart/form-data { userId, text, file? }` | Create a post with optional media. |
-| `POST /posts/:id/like` | `{ userId }` | Like a post. |
-| `POST /posts/:id/comments` | `{ userId, text }` | Add a comment to a post. |
+| `POST /posts` 🔐 | `multipart/form-data { userId, text, file? }` | Create a post with optional media upload. |
+| `POST /posts/:id/like` 🔐 | `{ userId }` | Like a post. |
+| `POST /posts/:id/comments` 🔐 | `{ userId, text }` | Add a comment to a post. |
 
-## Environment Variables
+## 🧩 Environment Variables
 | Variable | Location | Default | Purpose |
 |----------|----------|---------|---------|
-| `PORT` | `backend/.env` | `3000` | Port for the API server. |
-| `UPLOAD_DIR` | `backend/.env` | `uploads` | Directory where uploaded media is stored. |
-| `VITE_API_URL` | `frontend/.env` | `http://localhost:3000` | Backend base URL used by the frontend. |
+| `PORT` | `backend/.env` | `3000` | HTTP port for the API server. |
+| `MONGODB_URI` | `backend/.env` | `mongodb://localhost/bojex` | MongoDB connection string. |
+| `JWT_SECRET` | `backend/.env` | `secret` | Secret used to sign JWTs. |
+| `UPLOAD_DIR` | `backend/.env` | `uploads` | Directory for storing uploaded media. |
+| `VITE_API_URL` | `frontend/.env` | `http://localhost:3000` | Base URL of the backend API. |
 
-## Deployment Notes
-1. **Backend**
-   - Ensure Node.js is installed on the server.
-   - Install dependencies (`npm install`) and start with `npm start`.
-   - Serve the `/uploads` directory if media uploads are required.
-2. **Frontend**
-   - Build the static bundle with `npm run build`.
-   - Deploy the contents of `frontend/dist/` to any static host (e.g. Nginx, Vercel).
-   - Configure `VITE_API_URL` to point at the public URL of the backend.
+## 🚀 Deployment Notes
+### Backend
+1. Install dependencies with `npm install`.
+2. Set environment variables and ensure MongoDB is reachable.
+3. Start with `npm start` (consider a process manager like PM2 for production).
+4. Expose the `uploads/` directory or use a CDN for media files.
+
+### Frontend
+1. Run `npm run build` to produce static files in `frontend/dist/`.
+2. Serve the contents of `frontend/dist/` via any static hosting (Nginx, S3, Vercel, etc.).
+3. Configure `VITE_API_URL` at build time to point to the deployed backend.
 
 ## License
 MIT
