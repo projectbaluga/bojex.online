@@ -1,41 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import { Post } from './post.entity';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Post, PostDocument, Comment } from './post.schema';
 import { CreatePostDto } from './dto/create-post.dto';
 
 @Injectable()
 export class PostsService {
-  private posts: Post[] = [];
-  private nextId = 1;
+  constructor(@InjectModel(Post.name) private postModel: Model<PostDocument>) {}
 
-  create(data: CreatePostDto): Post {
-    const post: Post = {
-      id: this.nextId++,
-      userId: data.userId,
-      text: data.text,
-      media: data.media,
-      likes: [],
-      comments: [],
-      createdAt: new Date(),
-    };
-    this.posts.push(post);
-    return post;
+  create(data: CreatePostDto): Promise<Post> {
+    const created = new this.postModel({ ...data, likes: [], comments: [] });
+    return created.save();
   }
 
-  findAll(): Post[] {
-    return this.posts;
+  findAll(): Promise<Post[]> {
+    return this.postModel.find().exec();
   }
 
-  like(postId: number, userId: number) {
-    const post = this.posts.find((p) => p.id === postId);
-    if (post && !post.likes.includes(userId)) {
-      post.likes.push(userId);
-    }
+  async like(postId: string, userId: string) {
+    await this.postModel
+      .updateOne({ _id: postId }, { $addToSet: { likes: userId } })
+      .exec();
   }
 
-  addComment(postId: number, userId: number, text: string) {
-    const post = this.posts.find((p) => p.id === postId);
-    if (post) {
-      post.comments.push({ userId, text });
-    }
+  async addComment(postId: string, userId: string, text: string) {
+    const comment: Comment = { userId, text, createdAt: new Date() } as Comment;
+    await this.postModel
+      .updateOne({ _id: postId }, { $push: { comments: comment } })
+      .exec();
   }
 }

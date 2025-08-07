@@ -42,7 +42,7 @@ export default function usePosts(user) {
     if (!user) return;
     setPosts((prev) =>
       prev.map((p) =>
-        p.id === postId && !p.likes.includes(user.id)
+        (p._id || p.id) === postId && !p.likes.includes(user.id)
           ? { ...p, likes: [...p.likes, user.id] }
           : p
       )
@@ -59,7 +59,7 @@ export default function usePosts(user) {
     const comment = { userId: user.id, text };
     setPosts((prev) =>
       prev.map((p) =>
-        p.id === postId
+        (p._id || p.id) === postId
           ? { ...p, comments: [...p.comments, comment] }
           : p
       )

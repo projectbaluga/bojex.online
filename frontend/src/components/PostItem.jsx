@@ -6,7 +6,7 @@ function PostItem({ post, user, onLike, onComment }) {
   const submitComment = (e) => {
     e.preventDefault();
     if (!comment.trim()) return;
-    onComment(post.id, comment);
+    onComment(post._id || post.id, comment);
     setComment('');
   };
 
@@ -15,7 +15,7 @@ function PostItem({ post, user, onLike, onComment }) {
       <p>{post.text}</p>
       {post.media && (
         <img
-          src={`http://localhost:3000/${post.media}`}
+          src={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${post.media}`}
           alt="media"
           className="max-w-xs"
         />
@@ -24,7 +24,7 @@ function PostItem({ post, user, onLike, onComment }) {
       {user && (
         <button
           className="px-2 py-1 bg-pink-500 text-white mr-2"
-          onClick={() => onLike(post.id)}
+          onClick={() => onLike(post._id || post.id)}
         >
           Like
         </button>

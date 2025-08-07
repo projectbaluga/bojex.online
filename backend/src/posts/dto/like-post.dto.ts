@@ -1,6 +1,6 @@
-import { IsInt } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class LikePostDto {
-  @IsInt()
-  userId!: number;
+  @IsString()
+  userId!: string;
 }

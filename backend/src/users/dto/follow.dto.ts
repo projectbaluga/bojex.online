@@ -1,7 +1,6 @@
-import { IsInt, Min } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class FollowDto {
-  @IsInt()
-  @Min(1)
-  followerId!: number;
+  @IsString()
+  followerId!: string;
 }
