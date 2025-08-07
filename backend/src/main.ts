@@ -7,13 +7,14 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+  app.useStaticAssets(join(__dirname, '..', process.env.UPLOAD_DIR || 'uploads'), {
     prefix: '/uploads',
   });
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, transform: true })
   );
   app.useGlobalFilters(new HttpExceptionFilter());
-  await app.listen(3000);
+  const port = process.env.PORT || 3000;
+  await app.listen(port);
 }
 bootstrap();

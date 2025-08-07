@@ -27,8 +27,10 @@ cd bojex.online
 ```bash
 cd backend
 npm install
+# copy the example environment file
+cp .env.example .env
 ```
-Create a `.env` file (optional – values shown are defaults):
+Adjust values in `.env` as needed:
 ```env
 PORT=3000                # HTTP port for the API
 MONGODB_URI=mongodb://localhost/bojex # MongoDB connection string
@@ -45,8 +47,10 @@ The API listens on **http://localhost:3000** and exposes uploaded files at `http
 ```bash
 cd ../frontend
 npm install
+# copy the example environment file
+cp .env.example .env
 ```
-Create `.env` (optional):
+Adjust values in `.env` as needed:
 ```env
 VITE_API_URL=http://localhost:3000 # Base URL of the backend
 ```
