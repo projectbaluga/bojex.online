@@ -5,3 +5,12 @@ export interface User {
   followers: number[];
   following: number[];
 }
+
+export interface PublicUser {
+  id: number;
+  email: string;
+  followers: number[];
+  following: number[];
+  followersCount: number;
+  followingCount: number;
+}

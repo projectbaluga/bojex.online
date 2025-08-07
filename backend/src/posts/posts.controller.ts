@@ -23,7 +23,7 @@ export class PostsController {
   @UseInterceptors(FileInterceptor('file', { dest: 'uploads/' }))
   create(
     @Body() body: { userId: number; text: string },
-    @UploadedFile() file?: Express.Multer.File,
+    @UploadedFile() file?: any,
   ) {
     const media = file ? file.filename : undefined;
     return this.postsService.create(body.userId, body.text, media);

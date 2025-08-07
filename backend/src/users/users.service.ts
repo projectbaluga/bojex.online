@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { User } from './user.entity';
+import { User, PublicUser } from './user.entity';
 
 @Injectable()
 export class UsersService {
@@ -22,17 +22,49 @@ export class UsersService {
     return this.users.find((u) => u.email === email);
   }
 
-  findById(id: number): User | undefined {
+  private findById(id: number): User | undefined {
     return this.users.find((u) => u.id === id);
   }
 
-  follow(followerId: number, followeeId: number): void {
+  getProfile(id: number): PublicUser | undefined {
+    const user = this.findById(id);
+    return user ? this.sanitizeUser(user) : undefined;
+  }
+
+  sanitizeUser(user: User): PublicUser {
+    const { password, ...rest } = user;
+    return {
+      ...rest,
+      followersCount: user.followers.length,
+      followingCount: user.following.length,
+    };
+  }
+
+  follow(followerId: number, followeeId: number): boolean {
     const follower = this.findById(followerId);
     const followee = this.findById(followeeId);
-    if (follower && followee && !follower.following.includes(followeeId)) {
-      follower.following.push(followeeId);
-      followee.followers.push(followerId);
+    if (
+      !follower ||
+      !followee ||
+      followerId === followeeId ||
+      follower.following.includes(followeeId)
+    ) {
+      return false;
     }
+    follower.following.push(followeeId);
+    followee.followers.push(followerId);
+    return true;
+  }
+
+  unfollow(followerId: number, followeeId: number): boolean {
+    const follower = this.findById(followerId);
+    const followee = this.findById(followeeId);
+    if (!follower || !followee || !follower.following.includes(followeeId)) {
+      return false;
+    }
+    follower.following = follower.following.filter((id) => id !== followeeId);
+    followee.followers = followee.followers.filter((id) => id !== followerId);
+    return true;
   }
 
   getAll(): User[] {
