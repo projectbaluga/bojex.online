@@ -1,17 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { Post } from './post.entity';
+import { CreatePostDto } from './dto/create-post.dto';
 
 @Injectable()
 export class PostsService {
   private posts: Post[] = [];
   private nextId = 1;
 
-  create(userId: number, text: string, media?: string): Post {
+  create(data: CreatePostDto): Post {
     const post: Post = {
       id: this.nextId++,
-      userId,
-      text,
-      media,
+      userId: data.userId,
+      text: data.text,
+      media: data.media,
       likes: [],
       comments: [],
       createdAt: new Date(),
