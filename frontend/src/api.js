@@ -18,6 +18,22 @@ export async function login(payload) {
   return res.json();
 }
 
+export async function me(token) {
+  const res = await fetch(`${API_URL}/auth/me`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.json();
+}
+
+export async function refresh(token) {
+  const res = await fetch(`${API_URL}/auth/refresh`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token }),
+  });
+  return res.json();
+}
+
 export async function fetchPosts() {
   const res = await fetch(`${API_URL}/posts`);
   return res.json();

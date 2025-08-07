@@ -12,7 +12,7 @@ export class AuthService {
     return jwt.sign(
       { sub: user.id, email: user.email },
       process.env.JWT_SECRET || 'secret',
-      { expiresIn: '1h' },
+      { expiresIn: process.env.JWT_EXPIRATION || '1h' },
     );
   }
 
@@ -35,5 +35,29 @@ export class AuthService {
       return { user: safeUser, token };
     }
     return { error: 'Invalid credentials' };
+  }
+
+  refresh(token: string) {
+    try {
+      const payload = jwt.verify(token, process.env.JWT_SECRET || 'secret', {
+        ignoreExpiration: true,
+      }) as { sub: number };
+      const user = this.usersService.findById(payload.sub);
+      if (!user) {
+        return { error: 'Invalid token' };
+      }
+      const newToken = this.generateToken(user);
+      const { password: _pw, ...safeUser } = user;
+      return { user: safeUser, token: newToken };
+    } catch {
+      return { error: 'Invalid token' };
+    }
+  }
+
+  me(userId: number) {
+    const user = this.usersService.findById(userId);
+    if (!user) return null;
+    const { password: _pw, ...safeUser } = user;
+    return safeUser;
   }
 }

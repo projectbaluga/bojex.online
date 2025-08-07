@@ -5,6 +5,8 @@ import {
   fetchPosts as apiFetchPosts,
   createPost as apiCreatePost,
   likePost as apiLikePost,
+  me as apiMe,
+  refresh as apiRefresh,
 } from './api';
 
 function App() {
@@ -21,6 +23,25 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const parseJwt = (token) => {
+    try {
+      return JSON.parse(atob(token.split('.')[1]));
+    } catch {
+      return {};
+    }
+  };
+
+  const refreshToken = async () => {
+    const data = await apiRefresh(token);
+    if (data.token) {
+      setUser(data.user);
+      setToken(data.token);
+    } else {
+      setUser(null);
+      setToken('');
+    }
+  };
+
   useEffect(() => {
     localStorage.setItem('token', token);
   }, [token]);
@@ -32,6 +53,29 @@ function App() {
       localStorage.removeItem('user');
     }
   }, [user]);
+
+  useEffect(() => {
+    const verify = async () => {
+      if (!token) return;
+      const data = await apiMe(token);
+      if (data && !data.error) {
+        setUser(data);
+      } else {
+        await refreshToken();
+      }
+    };
+    verify();
+  }, [token]);
+
+  useEffect(() => {
+    if (!token) return;
+    const { exp } = parseJwt(token);
+    if (!exp) return;
+    const timeout = setTimeout(() => {
+      refreshToken();
+    }, Math.max(exp * 1000 - Date.now() - 60 * 1000, 0));
+    return () => clearTimeout(timeout);
+  }, [token]);
 
   const fetchPosts = async () => {
     const data = await apiFetchPosts();
@@ -45,26 +89,36 @@ function App() {
   const register = async () => {
     setLoading(true);
     setError('');
-    const data = await apiRegister(authForm);
-    setLoading(false);
-    if (data.token) {
-      setUser(data.user);
-      setToken(data.token);
-    } else if (data.error) {
-      setError(data.error);
+    try {
+      const data = await apiRegister(authForm);
+      if (data.token) {
+        setUser(data.user);
+        setToken(data.token);
+      } else if (data.error) {
+        setError(data.error);
+      }
+    } catch {
+      setError('Registration failed');
+    } finally {
+      setLoading(false);
     }
   };
 
   const login = async () => {
     setLoading(true);
     setError('');
-    const data = await apiLogin(authForm);
-    setLoading(false);
-    if (data.token) {
-      setUser(data.user);
-      setToken(data.token);
-    } else if (data.error) {
-      setError(data.error);
+    try {
+      const data = await apiLogin(authForm);
+      if (data.token) {
+        setUser(data.user);
+        setToken(data.token);
+      } else if (data.error) {
+        setError(data.error);
+      }
+    } catch {
+      setError('Login failed');
+    } finally {
+      setLoading(false);
     }
   };
 
