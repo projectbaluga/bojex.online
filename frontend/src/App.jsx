@@ -1,14 +1,31 @@
 import { useState, useEffect } from 'react';
 
 function App() {
-  const [user, setUser] = useState(null);
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+  const [user, setUser] = useState(() => {
+    const stored = localStorage.getItem('user');
+    return stored ? JSON.parse(stored) : null;
+  });
+  const [token, setToken] = useState(() => localStorage.getItem('token') || '');
   const [posts, setPosts] = useState([]);
   const [authForm, setAuthForm] = useState({ email: '', password: '' });
   const [postText, setPostText] = useState('');
   const [file, setFile] = useState(null);
 
+  useEffect(() => {
+    localStorage.setItem('token', token);
+  }, [token]);
+
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('user');
+    }
+  }, [user]);
+
   const fetchPosts = async () => {
-    const res = await fetch('http://localhost:3000/posts');
+    const res = await fetch(`${API_URL}/posts`);
     const data = await res.json();
     setPosts(data);
   };
@@ -18,24 +35,28 @@ function App() {
   }, []);
 
   const register = async () => {
-    const res = await fetch('http://localhost:3000/auth/register', {
+    const res = await fetch(`${API_URL}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(authForm),
     });
     const data = await res.json();
-    setUser(data);
+    if (data.token) {
+      setUser(data.user);
+      setToken(data.token);
+    }
   };
 
   const login = async () => {
-    const res = await fetch('http://localhost:3000/auth/login', {
+    const res = await fetch(`${API_URL}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(authForm),
     });
     const data = await res.json();
-    if (!data.error) {
-      setUser(data);
+    if (data.token) {
+      setUser(data.user);
+      setToken(data.token);
     }
   };
 
@@ -43,11 +64,11 @@ function App() {
     e.preventDefault();
     if (!user) return;
     const formData = new FormData();
-    formData.append('userId', user.id);
     formData.append('text', postText);
     if (file) formData.append('file', file);
-    await fetch('http://localhost:3000/posts', {
+    await fetch(`${API_URL}/posts`, {
       method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
       body: formData,
     });
     setPostText('');
@@ -110,7 +131,7 @@ function App() {
             <p>{p.text}</p>
             {p.media && (
               <img
-                src={`http://localhost:3000/${p.media}`}
+                src={`${API_URL}/${p.media}`}
                 alt="media"
                 className="max-w-xs"
               />

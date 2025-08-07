@@ -6,9 +6,12 @@ import {
   Param,
   UploadedFile,
   UseInterceptors,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PostsService } from './posts.service';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('posts')
 export class PostsController {
@@ -20,27 +23,32 @@ export class PostsController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file', { dest: 'uploads/' }))
   create(
-    @Body() body: { userId: number; text: string },
+    @Req() req,
+    @Body() body: { text: string },
     @UploadedFile() file?: Express.Multer.File,
   ) {
     const media = file ? file.filename : undefined;
-    return this.postsService.create(body.userId, body.text, media);
+    return this.postsService.create(req.user.sub, body.text, media);
   }
 
   @Post(':id/like')
-  like(@Param('id') id: string, @Body('userId') userId: number) {
-    this.postsService.like(Number(id), userId);
+  @UseGuards(JwtAuthGuard)
+  like(@Param('id') id: string, @Req() req) {
+    this.postsService.like(Number(id), req.user.sub);
     return { success: true };
   }
 
   @Post(':id/comments')
+  @UseGuards(JwtAuthGuard)
   comment(
     @Param('id') id: string,
-    @Body() body: { userId: number; text: string },
+    @Body() body: { text: string },
+    @Req() req,
   ) {
-    this.postsService.addComment(Number(id), body.userId, body.text);
+    this.postsService.addComment(Number(id), req.user.sub, body.text);
     return { success: true };
   }
 }
