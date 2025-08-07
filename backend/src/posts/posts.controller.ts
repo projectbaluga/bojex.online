@@ -9,7 +9,8 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { extname, basename } from 'path';
+import { extname } from 'path';
+import { randomUUID } from 'crypto';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 const multer = require('multer');
@@ -30,17 +31,22 @@ export class PostsController {
         destination: 'uploads/',
         filename: (req: any, file: any, cb: any) => {
           const ext = extname(file.originalname);
-          const base = basename(file.originalname, ext).replace(/[^a-zA-Z0-9]/g, '');
-          cb(null, `${Date.now()}-${base}${ext}`);
+          cb(null, `${randomUUID()}${ext}`);
         },
       }),
       fileFilter: (req: any, file: any, cb: any) => {
-        if (!file.mimetype.match(/^image\/(jpeg|png|gif)$/)) {
+        const allowed = [
+          'image/jpeg',
+          'image/png',
+          'image/gif',
+          'video/mp4',
+        ];
+        if (!allowed.includes(file.mimetype)) {
           return cb(new BadRequestException('Invalid file type'), false);
         }
         cb(null, true);
       },
-      limits: { fileSize: 5 * 1024 * 1024 },
+      limits: { fileSize: 10 * 1024 * 1024 },
     }),
   )
   create(
