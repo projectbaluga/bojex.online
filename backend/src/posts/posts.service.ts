@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { v4 as uuid } from 'uuid';
@@ -43,5 +43,15 @@ export class PostsService {
     post.comments.push(comment);
     await post.save();
     return comment;
+  }
+
+  async remove(id: string, userId: string) {
+    const post = await this.postModel.findById(id).exec();
+    if (!post) throw new NotFoundException('Post not found');
+    if (post.authorId !== userId) {
+      throw new ForbiddenException('Cannot delete this post');
+    }
+    await post.deleteOne();
+    return { deleted: true };
   }
 }

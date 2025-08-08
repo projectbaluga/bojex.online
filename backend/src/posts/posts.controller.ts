@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Post,
+  Delete,
   Req,
   UploadedFile,
   UseGuards,
@@ -55,5 +56,11 @@ export class PostsController {
     @Body() dto: CreateCommentDto,
   ) {
     return this.postsService.addComment(id, req.user.userId, dto.content);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  remove(@Param('id') id: string, @Req() req: any) {
+    return this.postsService.remove(id, req.user.userId);
   }
 }

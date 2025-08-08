@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User as UserEntity, UserDocument } from './schemas/user.schema';
 import { User } from '../common/interfaces/user.interface';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -34,6 +35,16 @@ export class UsersService {
 
   async findById(id: string): Promise<User> {
     const user = await this.userModel.findById(id).exec();
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return this.toUser(user);
+  }
+
+  async update(id: string, dto: UpdateUserDto): Promise<User> {
+    const user = await this.userModel
+      .findByIdAndUpdate(id, dto, { new: true })
+      .exec();
     if (!user) {
       throw new NotFoundException('User not found');
     }

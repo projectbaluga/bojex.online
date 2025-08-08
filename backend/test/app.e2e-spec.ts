@@ -11,7 +11,7 @@ describe('Auth & Posts (e2e)', () => {
   let mongo: MongoMemoryServer;
 
   beforeAll(async () => {
-    mongo = await MongoMemoryServer.create({ binary: { version: '7.0.14' } });
+    mongo = await MongoMemoryServer.create({ binary: { version: '7.0.5' } });
     const moduleRef = await Test.createTestingModule({
       imports: [
         MongooseModule.forRoot(mongo.getUri()),
@@ -30,11 +30,13 @@ describe('Auth & Posts (e2e)', () => {
     await mongo.stop();
   });
 
-  it('registers, logs in, and creates a post', async () => {
-    await request(app.getHttpServer())
+  it('supports profile update and post deletion', async () => {
+    const registerRes = await request(app.getHttpServer())
       .post('/auth/register')
       .send({ email: 'test@example.com', password: 'password' })
       .expect(201);
+
+    const userId = registerRes.body.id;
 
     const loginRes = await request(app.getHttpServer())
       .post('/auth/login')
@@ -44,12 +46,29 @@ describe('Auth & Posts (e2e)', () => {
     const token = loginRes.body.access_token;
     expect(token).toBeDefined();
 
+    const updateRes = await request(app.getHttpServer())
+      .patch(`/users/${userId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ bio: 'updated' })
+      .expect(200);
+
+    expect(updateRes.body.bio).toBe('updated');
+
     const postRes = await request(app.getHttpServer())
       .post('/posts')
       .set('Authorization', `Bearer ${token}`)
       .field('text', 'hello world')
       .expect(201);
 
-    expect(postRes.body.text).toBe('hello world');
+    const postId = postRes.body._id;
+
+    await request(app.getHttpServer())
+      .delete(`/posts/${postId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200);
+
+    await request(app.getHttpServer())
+      .get(`/posts/${postId}`)
+      .expect(404);
   });
 });

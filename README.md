@@ -6,18 +6,18 @@ A prototype social platform where users can register, share posts with optional 
 
 | Area | Progress |
 |------|----------|
-| Backend | ~70% |
+| Backend | ~75% |
 | Frontend | ~40% |
 | DevOps & Tooling | ~60% |
 | Documentation | ~70% |
 
 ### 🔧 Backend
 - [x] Authentication (JWT, register/login) – 100%
-- [ ] User profiles (follow, fetch, update) – ~80% (update not implemented)
-- [ ] Post system (create, fetch, delete, media upload) – ~75% (delete missing)
+- [x] User profiles (follow, fetch, update) – 100%
+- [x] Post system (create, fetch, delete, media upload) – 100%
 - [ ] Likes & Comments – ~90%
-- [ ] Input validation & error handling – ~80%
-- [ ] Test coverage (Jest/unit/integration) – ~30%
+- [ ] Input validation & error handling – ~85%
+- [ ] Test coverage (Jest/unit/integration) – ~35%
 
 ### 🎨 Frontend
 - [ ] Authentication forms & routing – ~40% (login form only)
@@ -44,7 +44,8 @@ A prototype social platform where users can register, share posts with optional 
 ### Backend
 - Email/password registration and JWT based login
 - Retrieve user profiles and follow/unfollow other users
-- Create text posts with optional media upload; list and view posts
+- Update profile details (bio, avatar)
+- Create text posts with optional media upload; list, view, and delete posts
 - Like/unlike and comment on posts
 - Data persisted in MongoDB
 
