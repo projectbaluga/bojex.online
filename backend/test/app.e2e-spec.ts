@@ -11,7 +11,7 @@ describe('Auth & Posts (e2e)', () => {
   let mongo: MongoMemoryServer;
 
   beforeAll(async () => {
-    mongo = await MongoMemoryServer.create({ binary: { version: '7.0.5' } });
+    mongo = await MongoMemoryServer.create({ binary: { version: '5.0.5' } });
     const moduleRef = await Test.createTestingModule({
       imports: [
         MongooseModule.forRoot(mongo.getUri()),
@@ -26,11 +26,11 @@ describe('Auth & Posts (e2e)', () => {
   });
 
   afterAll(async () => {
-    await app.close();
-    await mongo.stop();
+    if (app) await app.close();
+    if (mongo) await mongo.stop();
   });
 
-  it('supports profile update and post deletion', async () => {
+  it('supports profile update, likes, comments and post deletion', async () => {
     const registerRes = await request(app.getHttpServer())
       .post('/auth/register')
       .send({ email: 'test@example.com', password: 'password' })
@@ -61,6 +61,39 @@ describe('Auth & Posts (e2e)', () => {
       .expect(201);
 
     const postId = postRes.body._id;
+
+    await request(app.getHttpServer())
+      .post(`/posts/${postId}/like`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.likes).toBe(1);
+      });
+
+    await request(app.getHttpServer())
+      .delete(`/posts/${postId}/like`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.likes).toBe(0);
+      });
+
+    await request(app.getHttpServer())
+      .post(`/posts/${postId}/comments`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ content: 'first' })
+      .expect(201);
+
+    await request(app.getHttpServer())
+      .post(`/posts/${postId}/comments`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ content: 'second' })
+      .expect(201);
+
+    const commentsRes = await request(app.getHttpServer())
+      .get(`/posts/${postId}/comments?limit=1&sort=latest`)
+      .expect(200);
+    expect(commentsRes.body.comments[0].content).toBe('second');
 
     await request(app.getHttpServer())
       .delete(`/posts/${postId}`)

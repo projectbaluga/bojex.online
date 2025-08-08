@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { v4 as uuid } from 'uuid';
@@ -24,25 +28,66 @@ export class PostsService {
     return post.toObject();
   }
 
-  async toggleLike(id: string, userId: string) {
-    const post = await this.postModel.findById(id).exec();
-    if (!post) throw new NotFoundException('Post not found');
-    if (post.likes.includes(userId)) {
-      post.likes = post.likes.filter((u) => u !== userId);
-    } else {
-      post.likes.push(userId);
-    }
-    await post.save();
-    return { likes: post.likes.length };
+  async likePost(id: string, userId: string) {
+    const res = await this.postModel
+      .findByIdAndUpdate(
+        id,
+        { $addToSet: { likes: userId } },
+        { new: true },
+      )
+      .exec();
+    if (!res) throw new NotFoundException('Post not found');
+    return { likes: res.likes.length };
+  }
+
+  async unlikePost(id: string, userId: string) {
+    const res = await this.postModel
+      .findByIdAndUpdate(
+        id,
+        { $pull: { likes: userId } },
+        { new: true },
+      )
+      .exec();
+    if (!res) throw new NotFoundException('Post not found');
+    return { likes: res.likes.length };
   }
 
   async addComment(id: string, authorId: string, content: string) {
-    const post = await this.postModel.findById(id).exec();
-    if (!post) throw new NotFoundException('Post not found');
-    const comment: Comment = { id: uuid(), authorId, content, createdAt: new Date() };
-    post.comments.push(comment);
-    await post.save();
+    const comment: Comment = {
+      id: uuid(),
+      authorId,
+      content,
+      createdAt: new Date(),
+    };
+    const res = await this.postModel
+      .findByIdAndUpdate(
+        id,
+        { $push: { comments: comment } },
+        { new: true },
+      )
+      .exec();
+    if (!res) throw new NotFoundException('Post not found');
     return comment;
+  }
+
+  async getComments(
+    id: string,
+    page = 1,
+    limit = 10,
+    sort: 'latest' | 'oldest' = 'latest',
+  ) {
+    const post = await this.postModel
+      .findById(id, { comments: 1 })
+      .exec();
+    if (!post) throw new NotFoundException('Post not found');
+    const sorted = [...post.comments].sort((a, b) =>
+      sort === 'latest'
+        ? b.createdAt.getTime() - a.createdAt.getTime()
+        : a.createdAt.getTime() - b.createdAt.getTime(),
+    );
+    const start = (page - 1) * limit;
+    const comments = sorted.slice(start, start + limit);
+    return { total: sorted.length, comments };
   }
 
   async remove(id: string, userId: string) {

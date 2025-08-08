@@ -9,12 +9,16 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
+  Query,
+  HttpCode,
+  UsePipes,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
-import { CreateCommentDto } from '../comments/dto/create-comment.dto';
+import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
+import { z } from 'zod';
 
 @Controller('posts')
 export class PostsController {
@@ -38,29 +42,70 @@ export class PostsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(
+    @Param('id', new ZodValidationPipe(z.string().length(24))) id: string,
+  ) {
     return this.postsService.findOne(id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post(':id/like')
-  like(@Param('id') id: string, @Req() req: any) {
-    return this.postsService.toggleLike(id, req.user.userId);
+  @HttpCode(200)
+  like(
+    @Param('id', new ZodValidationPipe(z.string().length(24))) id: string,
+    @Req() req: any,
+  ) {
+    return this.postsService.likePost(id, req.user.userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id/like')
+  unlike(
+    @Param('id', new ZodValidationPipe(z.string().length(24))) id: string,
+    @Req() req: any,
+  ) {
+    return this.postsService.unlikePost(id, req.user.userId);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post(':id/comments')
   comment(
-    @Param('id') id: string,
+    @Param('id', new ZodValidationPipe(z.string().length(24))) id: string,
     @Req() req: any,
-    @Body() dto: CreateCommentDto,
+    @Body(new ZodValidationPipe(z.object({ content: z.string().min(1).max(200) })))
+    body: { content: string },
   ) {
-    return this.postsService.addComment(id, req.user.userId, dto.content);
+    return this.postsService.addComment(id, req.user.userId, body.content);
+  }
+
+  @Get(':id/comments')
+  @UsePipes(
+    new ZodValidationPipe(
+      z.object({
+        page: z.coerce.number().min(1).default(1).optional(),
+        limit: z.coerce.number().min(1).max(50).default(10).optional(),
+        sort: z.enum(['latest', 'oldest']).default('latest').optional(),
+      }),
+    ),
+  )
+  getComments(
+    @Param('id', new ZodValidationPipe(z.string().length(24))) id: string,
+    @Query()
+    query: {
+      page?: number;
+      limit?: number;
+      sort?: 'latest' | 'oldest';
+    },
+  ) {
+    return this.postsService.getComments(id, query.page, query.limit, query.sort);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string, @Req() req: any) {
+  remove(
+    @Param('id', new ZodValidationPipe(z.string().length(24))) id: string,
+    @Req() req: any,
+  ) {
     return this.postsService.remove(id, req.user.userId);
   }
 }
