@@ -120,7 +120,7 @@ curl -X POST http://localhost:3000/users/<USER_ID>/follow \
 ## API Reference
 
 ### Auth
-- `POST /auth/register` – create account. Body: `{ email, password }`. Returns user without password.
+- `POST /auth/register` – create account. Body: `{ email, password }`. Returns user without password; fails with `409 Conflict` if the email already exists.
 - `POST /auth/login` – authenticate and receive `{ access_token }`.
 - `POST /auth/google` – placeholder endpoint.
 - `POST /auth/discord` – placeholder endpoint.

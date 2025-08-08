@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { User } from '../common/interfaces/user.interface';
 import { v4 as uuid } from 'uuid';
 
@@ -7,6 +11,9 @@ export class UsersService {
   private users = new Map<string, User>();
 
   create(email: string, password: string): User {
+    if (this.users.has(email)) {
+      throw new ConflictException('Email already registered');
+    }
     const user: User = { id: uuid(), email, password, followers: [], following: [] };
     this.users.set(email, user);
     return user;
