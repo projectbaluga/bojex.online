@@ -36,8 +36,8 @@ A prototype social platform where users can register, share posts with optional 
 - [ ] CI/CD pipelines (GitHub Actions) – ~0%
 
 ### 📄 Documentation
-- [ ] README accuracy – ~80%
-- [ ] API reference in README – ~70%
+- [ ] README accuracy – ~85%
+- [ ] API reference in README – ~90%
 - [ ] INSTALLATION.md completeness – ~65%
 - [x] .env.example coverage – 100%
 
@@ -169,6 +169,12 @@ curl -X POST http://localhost:3000/posts/<POST_ID>/like \
   -H "Authorization: Bearer <TOKEN>"
 ```
 
+Unlike Post:
+```bash
+curl -X DELETE http://localhost:3000/posts/<POST_ID>/like \
+  -H "Authorization: Bearer <TOKEN>"
+```
+
 Comment on Post:
 ```bash
 curl -X POST http://localhost:3000/posts/<POST_ID>/comments \
@@ -191,14 +197,19 @@ curl -X POST http://localhost:3000/users/<USER_ID>/follow \
 
 ### Users
 - `GET /users/:id` – get public profile.
+- `PATCH /users/:id` – update profile details (requires JWT).
 - `POST /users/:id/follow` – toggle follow/unfollow (requires JWT).
 
 ### Posts
 - `POST /posts` – create post with `text` and optional `media` (multipart). Requires JWT.
 - `GET /posts` – list all posts.
 - `GET /posts/:id` – view a post.
-- `POST /posts/:id/like` – like/unlike a post (requires JWT).
+- `DELETE /posts/:id` – delete a post (requires JWT).
+- `POST /posts/:id/like` – like a post (requires JWT).
+- `DELETE /posts/:id/like` – remove a like (requires JWT).
+- `GET /posts/:id/comments` – list comments on a post.
 - `POST /posts/:id/comments` – add a comment with `{ content }` (requires JWT).
+- `DELETE /posts/:id/comments/:commentId` – delete a comment (requires JWT).
 
 ## Environment Variables
 - `PORT` – server port, default `3000`.
