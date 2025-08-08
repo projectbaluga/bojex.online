@@ -90,6 +90,20 @@ export class PostsService {
     return { total: sorted.length, comments };
   }
 
+  async removeComment(postId: string, commentId: string, userId: string) {
+    const post = await this.postModel.findById(postId).exec();
+    if (!post) throw new NotFoundException('Post not found');
+    const comment = post.comments.find((c) => c.id === commentId);
+    if (!comment) throw new NotFoundException('Comment not found');
+    if (comment.authorId !== userId && post.authorId !== userId) {
+      throw new ForbiddenException('Cannot delete this comment');
+    }
+    await this.postModel
+      .updateOne({ _id: postId }, { $pull: { comments: { id: commentId } } })
+      .exec();
+    return { deleted: true };
+  }
+
   async remove(id: string, userId: string) {
     const post = await this.postModel.findById(id).exec();
     if (!post) throw new NotFoundException('Post not found');

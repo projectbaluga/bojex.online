@@ -10,7 +10,7 @@ describe('PostsService', () => {
   let moduleRef: any;
 
   beforeAll(async () => {
-    mongo = await MongoMemoryServer.create({ binary: { version: '5.0.5' } });
+    mongo = await MongoMemoryServer.create({ binary: { version: '7.0.3' } });
     moduleRef = await Test.createTestingModule({
       imports: [
         MongooseModule.forRoot(mongo.getUri()),

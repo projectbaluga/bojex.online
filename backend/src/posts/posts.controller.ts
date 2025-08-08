@@ -78,6 +78,16 @@ export class PostsController {
     return this.postsService.addComment(id, req.user.userId, body.content);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Delete(':postId/comments/:commentId')
+  deleteComment(
+    @Param('postId', new ZodValidationPipe(z.string().length(24))) postId: string,
+    @Param('commentId', new ZodValidationPipe(z.string().uuid())) commentId: string,
+    @Req() req: any,
+  ) {
+    return this.postsService.removeComment(postId, commentId, req.user.userId);
+  }
+
   @Get(':id/comments')
   @UsePipes(
     new ZodValidationPipe(
