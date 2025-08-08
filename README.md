@@ -2,7 +2,7 @@
 
 A prototype social platform where users can register, share posts with optional media, like and comment on posts, and follow other users. The repository is split into a NestJS backend and a React frontend.
 
-## Features
+## Verified Features
 
 ### Backend
 - Email/password registration and JWT based login
@@ -21,27 +21,58 @@ A prototype social platform where users can register, share posts with optional 
 - **Database:** MongoDB with Mongoose
 - **Frontend:** React 18, Vite, Tailwind CSS, Heroicons
 
-## Installation
+## Setup
 
 ### Requirements
-- Docker
-- Docker Compose
+- Node.js 18+
+- npm
+- MongoDB (if running locally)
+- Docker & Docker Compose (optional)
 
-### Run with Docker
+### Local Setup
+1. Clone the repository and install dependencies:
+   ```bash
+   git clone https://example.com/bojex.online.git
+   cd bojex.online
+   ./install.sh
+   ```
+2. Ensure a MongoDB instance is running or set `MONGO_URI`.
+3. Start the backend:
+   ```bash
+   cd backend
+   npm start
+   ```
+4. Start the frontend:
+   ```bash
+   cd ../frontend
+   npm run dev
+   ```
+5. The backend runs at http://localhost:3000 and the frontend at http://localhost:5173.
+
+### Docker Setup
 Build and start the entire stack:
 ```bash
 docker compose up --build
 ```
-The backend runs at http://localhost:3000 and the frontend at http://localhost:5173.
+This launches MongoDB, the backend, and the frontend with the same URLs as above.
 
 ### Running Tests
-Execute tests inside their containers:
-```bash
-docker compose run --rm backend npm test
-docker compose run --rm frontend npm test
-```
+- **Local:**
+  ```bash
+  cd backend && npm test
+  cd frontend && npm test
+  ```
+- **Docker:**
+  ```bash
+  docker compose run --rm backend npm test
+  docker compose run --rm frontend npm test
+  ```
 
-For additional details, see [INSTALLATION.md](./INSTALLATION.md).
+Additional Docker notes are available in [INSTALLATION.md](./INSTALLATION.md).
+
+### Troubleshooting
+- Backend tests may fail with a MongoDB Memory Server download 403 error. Clearing the `~/.cache/mongodb-binaries` directory or updating `mongodb-memory-server` can resolve this.
+- Ensure Docker is running and ports `3000`/`5173` are free when using the compose setup.
 
 ## Folder Structure
 ```
