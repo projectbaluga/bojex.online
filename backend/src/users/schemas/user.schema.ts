@@ -4,10 +4,10 @@ import { Document } from 'mongoose';
 @Schema()
 export class User {
   @Prop({ required: true })
-  email: string;
+  email!: string;
 
   @Prop({ required: true })
-  password: string;
+  password!: string;
 
   @Prop()
   avatarUrl?: string;
@@ -16,10 +16,10 @@ export class User {
   bio?: string;
 
   @Prop({ type: [String], default: [] })
-  followers: string[];
+  followers!: string[];
 
   @Prop({ type: [String], default: [] })
-  following: string[];
+  following!: string[];
 }
 
 export type UserDocument = User & Document;

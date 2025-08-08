@@ -4,16 +4,16 @@ import { Document } from 'mongoose';
 @Schema()
 export class Comment {
   @Prop({ required: true })
-  id: string;
+  id!: string;
 
   @Prop({ required: true })
-  authorId: string;
+  authorId!: string;
 
   @Prop({ required: true })
-  content: string;
+  content!: string;
 
   @Prop({ default: Date.now })
-  createdAt: Date;
+  createdAt!: Date;
 }
 
 export const CommentSchema = SchemaFactory.createForClass(Comment);
@@ -21,22 +21,22 @@ export const CommentSchema = SchemaFactory.createForClass(Comment);
 @Schema()
 export class Post {
   @Prop({ required: true })
-  authorId: string;
+  authorId!: string;
 
   @Prop({ required: true })
-  text: string;
+  text!: string;
 
   @Prop()
   mediaUrl?: string;
 
   @Prop({ type: [String], default: [] })
-  likes: string[];
+  likes!: string[];
 
   @Prop({ type: [CommentSchema], default: [] })
-  comments: Comment[];
+  comments!: Comment[];
 
   @Prop({ default: Date.now })
-  createdAt: Date;
+  createdAt!: Date;
 }
 
 export type PostDocument = Post & Document;

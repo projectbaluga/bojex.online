@@ -14,7 +14,7 @@ A prototype social platform where users can register, share posts with optional 
 ### Frontend
 - React UI built with Vite and Tailwind CSS
 - Components for navigation, posts, comments, modals and upload previews
-- Demo app renders a sample post and lets you submit comments locally (no API integration yet)
+- Connects to the API for authentication and post feeds
 
 ## Technologies
 - **Backend:** Node.js, NestJS, TypeScript, Passport, JWT
@@ -117,8 +117,6 @@ curl -X POST http://localhost:3000/users/<USER_ID>/follow \
 ### Auth
 - `POST /auth/register` – create account. Body: `{ email, password }`. Returns user without password.
 - `POST /auth/login` – authenticate and receive `{ access_token }`.
-- `POST /auth/google` – placeholder endpoint.
-- `POST /auth/discord` – placeholder endpoint.
 
 ### Users
 - `GET /users/:id` – get public profile.
@@ -135,6 +133,7 @@ curl -X POST http://localhost:3000/users/<USER_ID>/follow \
 - `PORT` – server port, default `3000`.
 - `JWT_SECRET` – secret used to sign JWTs.
 - `MONGO_URI` – MongoDB connection string.
+- `VITE_API_URL` – frontend base URL for the backend API.
 
 ## Deployment Notes
 - Build the frontend with `cd frontend && npm run build` (output in `frontend/dist`).

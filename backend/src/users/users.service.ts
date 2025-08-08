@@ -1,21 +1,35 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User, UserDocument } from './schemas/user.schema';
+import { User as UserEntity, UserDocument } from './schemas/user.schema';
+import { User } from '../common/interfaces/user.interface';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(@InjectModel(UserEntity.name) private userModel: Model<UserDocument>) {}
+
+  private toUser(doc: UserDocument): User {
+    const { _id, email, password, avatarUrl, bio, followers, following } = doc.toObject();
+    return {
+      id: _id.toString(),
+      email,
+      password,
+      avatarUrl,
+      bio,
+      followers,
+      following,
+    };
+  }
 
   async create(email: string, password: string): Promise<User> {
     const created = new this.userModel({ email, password, followers: [], following: [] });
     await created.save();
-    return created.toObject();
+    return this.toUser(created);
   }
 
   async findByEmail(email: string): Promise<User | null> {
     const user = await this.userModel.findOne({ email }).exec();
-    return user ? user.toObject() : null;
+    return user ? this.toUser(user) : null;
   }
 
   async findById(id: string): Promise<User> {
@@ -23,7 +37,7 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    return user.toObject();
+    return this.toUser(user);
   }
 
   async follow(userId: string, targetId: string) {

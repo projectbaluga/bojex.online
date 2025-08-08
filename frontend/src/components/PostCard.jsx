@@ -1,7 +1,7 @@
 import UserAvatar from './UserAvatar';
 import Button from './Button';
 
-export default function PostCard({ author = 'Anonymous', avatar, timestamp = 'now', content = 'Lorem ipsum', media }) {
+export default function PostCard({ author, avatar, timestamp, content, media }) {
   return (
     <article className="bg-white shadow-card rounded-md p-4 space-y-4">
       <header className="flex items-center space-x-3">
