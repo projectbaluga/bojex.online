@@ -1,16 +1,17 @@
 import { Test } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { MongooseModule } from '@nestjs/mongoose';
+import { AllExceptionsFilter } from '../src/common/filters/all-exceptions.filter';
 
 describe('Auth & Posts (e2e)', () => {
   let app: INestApplication;
   let mongo: MongoMemoryServer;
 
   beforeAll(async () => {
-    mongo = await MongoMemoryServer.create();
+    mongo = await MongoMemoryServer.create({ binary: { version: '7.0.14' } });
     const moduleRef = await Test.createTestingModule({
       imports: [
         MongooseModule.forRoot(mongo.getUri()),
@@ -19,6 +20,8 @@ describe('Auth & Posts (e2e)', () => {
     }).compile();
 
     app = moduleRef.createNestApplication();
+    app.useGlobalPipes(new ValidationPipe({ transform: true }));
+    app.useGlobalFilters(new AllExceptionsFilter());
     await app.init();
   });
 

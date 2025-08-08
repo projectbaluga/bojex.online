@@ -4,7 +4,7 @@
   "description": "NestJS backend for bojex.online",
   "scripts": {
     "start": "ts-node src/main.ts",
-    "test": "MONGOMS_VERSION=6.0.6 MONGOMS_OS=ubuntu-20.04 jest"
+    "test": "jest"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

@@ -6,18 +6,18 @@ A prototype social platform where users can register, share posts with optional 
 
 | Area | Progress |
 |------|----------|
-| Backend | ~65% |
+| Backend | ~70% |
 | Frontend | ~40% |
 | DevOps & Tooling | ~60% |
 | Documentation | ~70% |
 
 ### 🔧 Backend
-- [ ] Authentication (JWT, register/login) – ~80%
-- [ ] User profiles (follow, fetch, update) – ~60% (update not implemented)
+- [x] Authentication (JWT, register/login) – 100%
+- [ ] User profiles (follow, fetch, update) – ~80% (update not implemented)
 - [ ] Post system (create, fetch, delete, media upload) – ~75% (delete missing)
-- [ ] Likes & Comments – ~80%
-- [ ] Input validation & error handling – ~70%
-- [ ] Test coverage (Jest/unit/integration) – ~20%
+- [ ] Likes & Comments – ~90%
+- [ ] Input validation & error handling – ~80%
+- [ ] Test coverage (Jest/unit/integration) – ~30%
 
 ### 🎨 Frontend
 - [ ] Authentication forms & routing – ~40% (login form only)
