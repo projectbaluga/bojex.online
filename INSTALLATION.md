@@ -1,10 +1,10 @@
 # Installation Guide for bojex.online
 
-This guide walks through setting up both the NestJS backend and React frontend for development.
+This guide explains how to run the project using Docker.
 
 ## Requirements
-- **Node.js 18+** and **npm**
-- **MongoDB** – required for persistence
+- Docker
+- Docker Compose
 - Git
 
 ## 1. Clone the Repository
@@ -13,61 +13,29 @@ git clone https://example.com/bojex.online.git
 cd bojex.online
 ```
 
-## 2. Automated Installation (Optional)
-Run the helper script to install dependencies for both backend and frontend:
+## 2. Build and Start the Stack
+Use Docker Compose to build images and launch MongoDB, the backend, and the frontend:
 ```bash
-./install.sh
+docker compose up --build
+```
+The backend is available at http://localhost:3000 and the frontend at http://localhost:5173.
+
+## 3. Running Tests
+Run the backend and frontend test suites inside their containers:
+```bash
+docker compose run --rm backend npm test
+docker compose run --rm frontend npm test
 ```
 
-## 3. Backend Setup
-1. Install dependencies:
-   ```bash
-   cd backend
-   npm install
-   ```
-2. Create a `.env` file with the following content:
-   ```env
-   PORT=3000
-   JWT_SECRET=your-secret
-   MONGO_URI=mongodb://localhost:27017/bojex
-   ```
-3. Start the server:
-   ```bash
-   npm start
-   ```
-   The backend listens on `http://localhost:3000`. Uploaded files are written to `backend/uploads`.
-
-## 4. Frontend Setup
-1. In a new terminal, install dependencies:
-   ```bash
-   cd frontend
-   npm install
-   ```
-2. Launch the Vite development server:
-   ```bash
-   npm run dev
-   ```
-   The app will be available at `http://localhost:5173`.
-
-## 5. Running Tests
-Both projects provide placeholder test scripts. Run them to verify your environment:
+## 4. Rebuilding Images
+When dependencies change, rebuild all images with:
 ```bash
-cd backend && npm test
-cd ../frontend && npm test
+docker compose build
 ```
 
-## 6. Building for Production
-To build the frontend for deployment:
-```bash
-cd frontend
-npm run build
-```
-Output is generated in `frontend/dist`.
-
-Start the backend with `npm start` as described above and serve the built frontend files with a static file server of your choice.
-
-## 7. Troubleshooting
-- Ensure environment variables in `.env` are correct.
-- If ports `3000` or `5173` are in use, update `PORT` or configure Vite accordingly.
+## 5. Troubleshooting
+- Ensure the Docker daemon is running.
+- If ports `3000` or `5173` are in use, stop the conflicting service or change the mapping in `docker-compose.yml`.
 
 You're ready to develop and experiment with bojex.online!
+

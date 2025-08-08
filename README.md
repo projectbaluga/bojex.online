@@ -24,34 +24,24 @@ A prototype social platform where users can register, share posts with optional 
 ## Installation
 
 ### Requirements
-- Node.js 18+
-- npm
-- MongoDB
+- Docker
+- Docker Compose
 
-For a more detailed walkthrough, including running tests and building for production, see [INSTALLATION.md](./INSTALLATION.md).
-To install backend and frontend dependencies in one step, run `./install.sh`.
+### Run with Docker
+Build and start the entire stack:
+```bash
+docker compose up --build
+```
+The backend runs at http://localhost:3000 and the frontend at http://localhost:5173.
 
+### Running Tests
+Execute tests inside their containers:
+```bash
+docker compose run --rm backend npm test
+docker compose run --rm frontend npm test
+```
 
-### Backend Setup
-1. `cd backend`
-2. `npm install`
-3. Create a `.env` file:
-
-   ```env
-   PORT=3000
-   JWT_SECRET=your-secret
-   MONGO_URI=mongodb://localhost:27017/bojex
-   ```
-4. `npm start`
-
-The server listens on `http://localhost:3000` by default. Uploaded files are stored in `backend/uploads` and served from `/uploads`.
-
-### Frontend Setup
-1. `cd frontend`
-2. `npm install`
-3. `npm run dev`
-
-The Vite dev server starts on `http://localhost:5173`. No environment variables are required for the frontend.
+For additional details, see [INSTALLATION.md](./INSTALLATION.md).
 
 ## Folder Structure
 ```
