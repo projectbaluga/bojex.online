@@ -27,6 +27,10 @@ A prototype social platform where users can register, share posts with optional 
 - npm
 - (Optional) MongoDB – configuration exists but the prototype stores data in memory
 
+For a more detailed walkthrough, including running tests and building for production, see [INSTALLATION.md](./INSTALLATION.md).
+To install backend and frontend dependencies in one step, run `./install.sh`.
+
+
 ### Backend Setup
 1. `cd backend`
 2. `npm install`
