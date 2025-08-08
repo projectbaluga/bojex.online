@@ -2,6 +2,43 @@
 
 A prototype social platform where users can register, share posts with optional media, like and comment on posts, and follow other users. The repository is split into a NestJS backend and a React frontend.
 
+## Project Status
+
+| Area | Progress |
+|------|----------|
+| Backend | ~65% |
+| Frontend | ~40% |
+| DevOps & Tooling | ~60% |
+| Documentation | ~70% |
+
+### 🔧 Backend
+- [ ] Authentication (JWT, register/login) – ~80%
+- [ ] User profiles (follow, fetch, update) – ~60% (update not implemented)
+- [ ] Post system (create, fetch, delete, media upload) – ~75% (delete missing)
+- [ ] Likes & Comments – ~80%
+- [ ] Input validation & error handling – ~70%
+- [ ] Test coverage (Jest/unit/integration) – ~20%
+
+### 🎨 Frontend
+- [ ] Authentication forms & routing – ~40% (login form only)
+- [ ] Post feed & UI integration – ~60%
+- [ ] Like/comment functionality – ~20% (UI only)
+- [ ] File uploads & previews – ~30%
+- [ ] Responsive layout & polish – ~50%
+- [ ] Test coverage (Vitest/unit/ui) – ~30%
+
+### 🐳 DevOps & Tooling
+- [ ] Working Docker Compose setup – ~70%
+- [ ] Environment variables & config management – ~80%
+- [x] Installation scripts – 100%
+- [ ] CI/CD pipelines (GitHub Actions) – ~0%
+
+### 📄 Documentation
+- [ ] README accuracy – ~70%
+- [ ] API reference in README – ~60%
+- [ ] INSTALLATION.md completeness – ~60%
+- [x] .env.example coverage – 100%
+
 ## Verified Features
 
 ### Backend
