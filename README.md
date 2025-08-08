@@ -18,7 +18,7 @@ A prototype social platform where users can register, share posts with optional 
 - [x] User profiles (follow, fetch, update) – 100%
 - [x] Post system (create, fetch, delete, media upload) – 100%
 - [x] Likes & Comments – 100%
-- [ ] Input validation & error handling – ~90%
+- [x] Input validation & error handling – 100%
 - [ ] Test coverage (Jest/unit/integration) – ~40%
 
 ### 🎨 Frontend
