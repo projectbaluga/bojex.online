@@ -2,41 +2,43 @@
 
 A prototype social platform where users can register, share posts with optional media, like and comment on posts, and follow other users. The repository is split into a NestJS backend and a React frontend.
 
+> **Current Status:** Active development. The backend is largely feature-complete, while the frontend is still missing many features and polish. This project is not production-ready.
+
 ## Project Status
 
 | Area | Progress |
 |------|----------|
-| Backend | ~75% |
-| Frontend | ~40% |
-| DevOps & Tooling | ~60% |
-| Documentation | ~70% |
+| Backend | ~85% |
+| Frontend | ~50% |
+| DevOps & Tooling | ~70% |
+| Documentation | ~75% |
 
 ### 🔧 Backend
 - [x] Authentication (JWT, register/login) – 100%
 - [x] User profiles (follow, fetch, update) – 100%
 - [x] Post system (create, fetch, delete, media upload) – 100%
-- [ ] Likes & Comments – ~90%
-- [ ] Input validation & error handling – ~85%
-- [ ] Test coverage (Jest/unit/integration) – ~35%
+- [ ] Likes & Comments – ~95%
+- [ ] Input validation & error handling – ~90%
+- [ ] Test coverage (Jest/unit/integration) – ~40%
 
 ### 🎨 Frontend
-- [ ] Authentication forms & routing – ~40% (login form only)
-- [ ] Post feed & UI integration – ~60%
-- [ ] Like/comment functionality – ~20% (UI only)
-- [ ] File uploads & previews – ~30%
-- [ ] Responsive layout & polish – ~50%
-- [ ] Test coverage (Vitest/unit/ui) – ~30%
+- [ ] Authentication forms & routing – ~50% (login implemented)
+- [ ] Post feed & UI integration – ~70%
+- [ ] Like/comment functionality – ~40%
+- [ ] File uploads & previews – ~40%
+- [ ] Responsive layout & polish – ~60%
+- [ ] Test coverage (Vitest/unit/ui) – ~35%
 
 ### 🐳 DevOps & Tooling
-- [ ] Working Docker Compose setup – ~70%
-- [ ] Environment variables & config management – ~80%
+- [ ] Working Docker Compose setup – ~80%
+- [ ] Environment variables & config management – ~85%
 - [x] Installation scripts – 100%
 - [ ] CI/CD pipelines (GitHub Actions) – ~0%
 
 ### 📄 Documentation
-- [ ] README accuracy – ~70%
-- [ ] API reference in README – ~60%
-- [ ] INSTALLATION.md completeness – ~60%
+- [ ] README accuracy – ~80%
+- [ ] API reference in README – ~70%
+- [ ] INSTALLATION.md completeness – ~65%
 - [x] .env.example coverage – 100%
 
 ## Verified Features
