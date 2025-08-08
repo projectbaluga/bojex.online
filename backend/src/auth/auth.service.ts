@@ -15,13 +15,13 @@ export class AuthService {
 
   async register(dto: RegisterDto): Promise<Omit<User, 'password'>> {
     const hash = await bcrypt.hash(dto.password, 10);
-    const user = this.usersService.create(dto.email, hash);
+    const user = await this.usersService.create(dto.email, hash);
     const { password, ...rest } = user;
     return rest;
   }
 
   async validateUser(email: string, password: string): Promise<User> {
-    const user = this.usersService.findByEmail(email);
+    const user = await this.usersService.findByEmail(email);
     if (!user) {
       throw new UnauthorizedException();
     }

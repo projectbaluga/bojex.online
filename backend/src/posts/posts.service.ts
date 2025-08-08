@@ -1,49 +1,47 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Post, Comment } from '../common/interfaces/post.interface';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { v4 as uuid } from 'uuid';
+import { Post, PostDocument, Comment } from './schemas/post.schema';
 
 @Injectable()
 export class PostsService {
-  private posts = new Map<string, Post>();
+  constructor(@InjectModel(Post.name) private postModel: Model<PostDocument>) {}
 
-  create(authorId: string, text: string, mediaUrl?: string): Post {
-    const post: Post = {
-      id: uuid(),
-      authorId,
-      text,
-      mediaUrl,
-      likes: new Set(),
-      comments: [],
-      createdAt: new Date(),
-    };
-    this.posts.set(post.id, post);
-    return post;
+  async create(authorId: string, text: string, mediaUrl?: string): Promise<Post> {
+    const post = await this.postModel.create({ authorId, text, mediaUrl });
+    return post.toObject();
   }
 
-  findAll(): Post[] {
-    return Array.from(this.posts.values());
+  async findAll(): Promise<Post[]> {
+    const posts = await this.postModel.find().exec();
+    return posts.map((p) => p.toObject());
   }
 
-  findOne(id: string): Post {
-    const post = this.posts.get(id);
+  async findOne(id: string): Promise<Post> {
+    const post = await this.postModel.findById(id).exec();
     if (!post) throw new NotFoundException('Post not found');
-    return post;
+    return post.toObject();
   }
 
-  toggleLike(id: string, userId: string) {
-    const post = this.findOne(id);
-    if (post.likes.has(userId)) {
-      post.likes.delete(userId);
+  async toggleLike(id: string, userId: string) {
+    const post = await this.postModel.findById(id).exec();
+    if (!post) throw new NotFoundException('Post not found');
+    if (post.likes.includes(userId)) {
+      post.likes = post.likes.filter((u) => u !== userId);
     } else {
-      post.likes.add(userId);
+      post.likes.push(userId);
     }
-    return { likes: post.likes.size };
+    await post.save();
+    return { likes: post.likes.length };
   }
 
-  addComment(id: string, authorId: string, content: string) {
-    const post = this.findOne(id);
+  async addComment(id: string, authorId: string, content: string) {
+    const post = await this.postModel.findById(id).exec();
+    if (!post) throw new NotFoundException('Post not found');
     const comment: Comment = { id: uuid(), authorId, content, createdAt: new Date() };
     post.comments.push(comment);
+    await post.save();
     return comment;
   }
 }

@@ -1,32 +1,37 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { User } from '../common/interfaces/user.interface';
-import { v4 as uuid } from 'uuid';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { User, UserDocument } from './schemas/user.schema';
 
 @Injectable()
 export class UsersService {
-  private users = new Map<string, User>();
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  create(email: string, password: string): User {
-    const user: User = { id: uuid(), email, password, followers: [], following: [] };
-    this.users.set(email, user);
-    return user;
+  async create(email: string, password: string): Promise<User> {
+    const created = new this.userModel({ email, password, followers: [], following: [] });
+    await created.save();
+    return created.toObject();
   }
 
-  findByEmail(email: string): User | undefined {
-    return this.users.get(email);
+  async findByEmail(email: string): Promise<User | null> {
+    const user = await this.userModel.findOne({ email }).exec();
+    return user ? user.toObject() : null;
   }
 
-  findById(id: string): User {
-    const user = Array.from(this.users.values()).find((u) => u.id === id);
+  async findById(id: string): Promise<User> {
+    const user = await this.userModel.findById(id).exec();
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    return user;
+    return user.toObject();
   }
 
-  follow(userId: string, targetId: string) {
-    const user = this.findById(userId);
-    const target = this.findById(targetId);
+  async follow(userId: string, targetId: string) {
+    const user = await this.userModel.findById(userId).exec();
+    const target = await this.userModel.findById(targetId).exec();
+    if (!user || !target) {
+      throw new NotFoundException('User not found');
+    }
     if (user.following.includes(targetId)) {
       user.following = user.following.filter((id) => id !== targetId);
       target.followers = target.followers.filter((id) => id !== userId);
@@ -34,6 +39,8 @@ export class UsersService {
       user.following.push(targetId);
       target.followers.push(userId);
     }
+    await user.save();
+    await target.save();
     return { following: user.following.length, followers: target.followers.length };
   }
 }

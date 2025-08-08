@@ -4,7 +4,7 @@ This guide walks through setting up both the NestJS backend and React frontend f
 
 ## Requirements
 - **Node.js 18+** and **npm**
-- (Optional) **MongoDB** – configuration exists but the prototype uses in-memory storage
+- **MongoDB** – required for persistence
 - Git
 
 ## 1. Clone the Repository

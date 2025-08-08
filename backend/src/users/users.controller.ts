@@ -7,8 +7,8 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get(':id')
-  getProfile(@Param('id') id: string) {
-    const { password, ...user } = this.usersService.findById(id);
+  async getProfile(@Param('id') id: string) {
+    const { password, ...user } = await this.usersService.findById(id);
     return user;
   }
 

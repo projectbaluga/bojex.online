@@ -9,7 +9,7 @@ A prototype social platform where users can register, share posts with optional 
 - Retrieve user profiles and follow/unfollow other users
 - Create text posts with optional media upload; list and view posts
 - Like/unlike and comment on posts
-- All data is stored in-memory and resets on server restart
+- Data persisted in MongoDB
 
 ### Frontend
 - React UI built with Vite and Tailwind CSS
@@ -18,6 +18,7 @@ A prototype social platform where users can register, share posts with optional 
 
 ## Technologies
 - **Backend:** Node.js, NestJS, TypeScript, Passport, JWT
+- **Database:** MongoDB with Mongoose
 - **Frontend:** React 18, Vite, Tailwind CSS, Heroicons
 
 ## Installation
@@ -25,7 +26,7 @@ A prototype social platform where users can register, share posts with optional 
 ### Requirements
 - Node.js 18+
 - npm
-- (Optional) MongoDB – configuration exists but the prototype stores data in memory
+- MongoDB
 
 For a more detailed walkthrough, including running tests and building for production, see [INSTALLATION.md](./INSTALLATION.md).
 To install backend and frontend dependencies in one step, run `./install.sh`.
@@ -143,7 +144,7 @@ curl -X POST http://localhost:3000/users/<USER_ID>/follow \
 ## Environment Variables
 - `PORT` – server port, default `3000`.
 - `JWT_SECRET` – secret used to sign JWTs.
-- `MONGO_URI` – MongoDB connection string (unused in the prototype).
+- `MONGO_URI` – MongoDB connection string.
 
 ## Deployment Notes
 - Build the frontend with `cd frontend && npm run build` (output in `frontend/dist`).

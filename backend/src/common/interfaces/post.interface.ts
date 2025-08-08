@@ -3,7 +3,7 @@ export interface Post {
   authorId: string;
   text: string;
   mediaUrl?: string;
-  likes: Set<string>;
+  likes: string[];
   comments: Comment[];
   createdAt: Date;
 }
