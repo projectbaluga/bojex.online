@@ -10,7 +10,7 @@ A prototype social platform where users can register, share posts with optional 
 |------|----------|
 | Backend | ~85% |
 | Frontend | ~50% |
-| DevOps & Tooling | ~70% |
+| DevOps & Tooling | ~90% |
 | Documentation | ~75% |
 
 ### 🔧 Backend
@@ -33,7 +33,7 @@ A prototype social platform where users can register, share posts with optional 
 - [ ] Working Docker Compose setup – ~80%
 - [ ] Environment variables & config management – ~85%
 - [x] Installation scripts – 100%
-- [ ] CI/CD pipelines (GitHub Actions) – ~0%
+- [x] CI/CD pipelines (GitHub Actions) – 100%
 
 ### 📄 Documentation
 - [ ] README accuracy – ~85%
