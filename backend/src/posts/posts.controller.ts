@@ -11,7 +11,6 @@ import {
   UseInterceptors,
   Query,
   HttpCode,
-  UsePipes,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PostsService } from './posts.service';
@@ -89,18 +88,17 @@ export class PostsController {
   }
 
   @Get(':id/comments')
-  @UsePipes(
-    new ZodValidationPipe(
-      z.object({
-        page: z.coerce.number().min(1).default(1).optional(),
-        limit: z.coerce.number().min(1).max(50).default(10).optional(),
-        sort: z.enum(['latest', 'oldest']).default('latest').optional(),
-      }),
-    ),
-  )
   getComments(
     @Param('id', new ZodValidationPipe(z.string().length(24))) id: string,
-    @Query()
+    @Query(
+      new ZodValidationPipe(
+        z.object({
+          page: z.coerce.number().min(1).default(1).optional(),
+          limit: z.coerce.number().min(1).max(50).default(10).optional(),
+          sort: z.enum(['latest', 'oldest']).default('latest').optional(),
+        }),
+      ),
+    )
     query: {
       page?: number;
       limit?: number;

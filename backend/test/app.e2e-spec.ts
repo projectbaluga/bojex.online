@@ -3,7 +3,6 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { MongooseModule } from '@nestjs/mongoose';
 import { AllExceptionsFilter } from '../src/common/filters/all-exceptions.filter';
 
 jest.setTimeout(60000);
@@ -16,11 +15,9 @@ describe('Auth & Posts (e2e)', () => {
   beforeAll(async () => {
     try {
       mongo = await MongoMemoryServer.create();
+      process.env.MONGO_URI = mongo.getUri();
       const moduleRef = await Test.createTestingModule({
-        imports: [
-          MongooseModule.forRoot(mongo.getUri()),
-          AppModule,
-        ],
+        imports: [AppModule],
       }).compile();
 
       app = moduleRef.createNestApplication();
@@ -36,6 +33,7 @@ describe('Auth & Posts (e2e)', () => {
   afterAll(async () => {
     if (app) await app.close();
     if (mongo) await mongo.stop();
+    delete process.env.MONGO_URI;
   });
 
   it('supports profile update, likes, comments and post deletion', async () => {
@@ -111,6 +109,7 @@ describe('Auth & Posts (e2e)', () => {
 
     const commentsRes = await request(app.getHttpServer())
       .get(`/posts/${postId}/comments`)
+      .query({ page: 1, limit: 10 })
       .expect(200);
     expect(commentsRes.body.total).toBe(1);
     expect(commentsRes.body.comments[0].content).toBe('second');
