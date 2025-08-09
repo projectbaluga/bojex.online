@@ -22,11 +22,7 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @Post()
   @UseInterceptors(FileInterceptor('media'))
-  create(
-    @Req() req: any,
-    @Body() dto: CreatePostDto,
-    @UploadedFile() file?: Express.Multer.File,
-  ) {
+  create(@Req() req: any, @Body() dto: CreatePostDto, @UploadedFile() file?: Express.Multer.File) {
     const mediaUrl = file ? `/uploads/${file.filename}` : undefined;
     return this.postsService.create(req.user.userId, dto.text, mediaUrl);
   }
@@ -49,11 +45,7 @@ export class PostsController {
 
   @UseGuards(JwtAuthGuard)
   @Post(':id/comments')
-  comment(
-    @Param('id') id: string,
-    @Req() req: any,
-    @Body() dto: CreateCommentDto,
-  ) {
+  comment(@Param('id') id: string, @Req() req: any, @Body() dto: CreateCommentDto) {
     return this.postsService.addComment(id, req.user.userId, dto.content);
   }
 }
