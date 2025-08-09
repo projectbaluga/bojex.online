@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Post,
-  UseGuards,
-  Req,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
+import { Body, Controller, Post, UseGuards, Req, HttpException, HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -29,17 +21,11 @@ export class AuthController {
 
   @Post('google')
   googlePlaceholder() {
-    throw new HttpException(
-      { status: 'not_implemented' },
-      HttpStatus.NOT_IMPLEMENTED,
-    );
+    throw new HttpException({ status: 'not_implemented' }, HttpStatus.NOT_IMPLEMENTED);
   }
 
   @Post('discord')
   discordPlaceholder() {
-    throw new HttpException(
-      { status: 'not_implemented' },
-      HttpStatus.NOT_IMPLEMENTED,
-    );
+    throw new HttpException({ status: 'not_implemented' }, HttpStatus.NOT_IMPLEMENTED);
   }
 }

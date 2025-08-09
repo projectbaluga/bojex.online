@@ -5,10 +5,8 @@ const base =
 
 const variants = {
   primary: 'bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-primary',
-  secondary:
-    'bg-secondary text-secondary-foreground hover:bg-secondary/90 focus:ring-secondary',
-  ghost:
-    'bg-transparent text-primary hover:bg-primary/10 focus:ring-primary',
+  secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/90 focus:ring-secondary',
+  ghost: 'bg-transparent text-primary hover:bg-primary/10 focus:ring-primary',
 };
 
 export default function Button({
