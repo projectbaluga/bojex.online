@@ -36,6 +36,7 @@ A prototype social platform where users can register, share posts with optional 
    PORT=3000
    JWT_SECRET=your-secret
    MONGO_URI=mongodb://localhost:27017/bojex
+   USE_MONGO=false
    ```
 4. `npm start`
 
@@ -44,9 +45,15 @@ The server listens on `http://localhost:3000` by default. Uploaded files are sto
 ### Frontend Setup
 1. `cd frontend`
 2. `npm install`
-3. `npm run dev`
+3. (Optional) create a `.env` file with:
 
-The Vite dev server starts on `http://localhost:5173`. No environment variables are required for the frontend.
+   ```env
+   VITE_API_URL=http://localhost:3000
+   ```
+
+4. `npm run dev`
+
+The Vite dev server starts on `http://localhost:5173`. The demo UI runs locally and only attempts API calls if `VITE_API_URL` is set.
 
 ## Folder Structure
 ```
@@ -122,24 +129,25 @@ curl -X POST http://localhost:3000/users/<USER_ID>/follow \
 ### Auth
 - `POST /auth/register` – create account. Body: `{ email, password }`. Returns user without password.
 - `POST /auth/login` – authenticate and receive `{ access_token }`.
-- `POST /auth/google` – placeholder endpoint.
-- `POST /auth/discord` – placeholder endpoint.
+- `POST /auth/google` – placeholder endpoint that responds with `501 {"status":"not_implemented"}`.
+- `POST /auth/discord` – placeholder endpoint that responds with `501 {"status":"not_implemented"}`.
 
 ### Users
 - `GET /users/:id` – get public profile.
-- `POST /users/:id/follow` – toggle follow/unfollow (requires JWT).
+- `POST /users/:id/follow` – toggle follow/unfollow and return `{ following: boolean }` (requires JWT).
 
 ### Posts
 - `POST /posts` – create post with `text` and optional `media` (multipart). Requires JWT.
 - `GET /posts` – list all posts.
 - `GET /posts/:id` – view a post.
-- `POST /posts/:id/like` – like/unlike a post (requires JWT).
+- `POST /posts/:id/like` – like/unlike a post and return `{ liked, likes }` (requires JWT).
 - `POST /posts/:id/comments` – add a comment with `{ content }` (requires JWT).
 
 ## Environment Variables
 - `PORT` – server port, default `3000`.
 - `JWT_SECRET` – secret used to sign JWTs.
 - `MONGO_URI` – MongoDB connection string (unused in the prototype).
+- `USE_MONGO` – set to `true` to enable future MongoDB integration; defaults to `false`.
 
 ## Deployment Notes
 - Build the frontend with `cd frontend && npm run build` (output in `frontend/dist`).

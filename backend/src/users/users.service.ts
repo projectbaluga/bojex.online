@@ -27,13 +27,16 @@ export class UsersService {
   follow(userId: string, targetId: string) {
     const user = this.findById(userId);
     const target = this.findById(targetId);
+    let following: boolean;
     if (user.following.includes(targetId)) {
       user.following = user.following.filter((id) => id !== targetId);
       target.followers = target.followers.filter((id) => id !== userId);
+      following = false;
     } else {
       user.following.push(targetId);
       target.followers.push(userId);
+      following = true;
     }
-    return { following: user.following.length, followers: target.followers.length };
+    return { following };
   }
 }

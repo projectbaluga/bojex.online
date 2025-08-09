@@ -1,4 +1,12 @@
-import { Body, Controller, Post, UseGuards, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  UseGuards,
+  Req,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -21,11 +29,17 @@ export class AuthController {
 
   @Post('google')
   googlePlaceholder() {
-    return { message: 'Google OAuth not implemented yet' };
+    throw new HttpException(
+      { status: 'not_implemented' },
+      HttpStatus.NOT_IMPLEMENTED,
+    );
   }
 
   @Post('discord')
   discordPlaceholder() {
-    return { message: 'Discord OAuth not implemented yet' };
+    throw new HttpException(
+      { status: 'not_implemented' },
+      HttpStatus.NOT_IMPLEMENTED,
+    );
   }
 }
