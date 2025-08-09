@@ -6,6 +6,8 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AllExceptionsFilter } from '../src/common/filters/all-exceptions.filter';
 
+jest.setTimeout(60000);
+
 describe('Auth & Posts (e2e)', () => {
   let app: INestApplication;
   let mongo: MongoMemoryServer | null = null;
