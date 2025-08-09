@@ -25,3 +25,21 @@ export async function getPosts() {
   if (!res.ok) throw new Error('Failed to fetch posts');
   return res.json();
 }
+
+export async function likePost(id, token) {
+  const res = await fetch(`${API_URL}/posts/${id}/like`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Failed to like post');
+  return res.json();
+}
+
+export async function unlikePost(id, token) {
+  const res = await fetch(`${API_URL}/posts/${id}/like`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Failed to unlike post');
+  return res.json();
+}

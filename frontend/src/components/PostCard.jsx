@@ -1,7 +1,17 @@
 import UserAvatar from './UserAvatar';
 import Button from './Button';
 
-export default function PostCard({ author, avatar, timestamp, content, media }) {
+export default function PostCard({
+  id,
+  author,
+  avatar,
+  timestamp,
+  content,
+  media,
+  likesCount = 0,
+  liked = false,
+  onToggleLike,
+}) {
   return (
     <article className="bg-white shadow-card rounded-md p-4 space-y-4">
       <header className="flex items-center space-x-3">
@@ -16,7 +26,9 @@ export default function PostCard({ author, avatar, timestamp, content, media }) 
         {media && <img src={media} alt="" className="max-h-60 w-full object-cover rounded-md" />}
       </div>
       <footer className="flex space-x-4">
-        <Button variant="ghost">Like</Button>
+        <Button variant="ghost" onClick={() => onToggleLike?.(id, liked)}>
+          {liked ? 'Unlike' : 'Like'} ({likesCount})
+        </Button>
         <Button variant="ghost">Comment</Button>
       </footer>
     </article>

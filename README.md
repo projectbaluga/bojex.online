@@ -9,7 +9,7 @@ A prototype social platform where users can register, share posts with optional 
 | Area | Progress |
 |------|----------|
 | Backend | ~85% |
-| Frontend | ~50% |
+| Frontend | ~55% |
 | DevOps & Tooling | ~90% |
 | Documentation | ~75% |
 
@@ -24,7 +24,7 @@ A prototype social platform where users can register, share posts with optional 
 ### 🎨 Frontend
 - [ ] Authentication forms & routing – ~75% (login & register implemented)
 - [ ] Post feed & UI integration – ~70%
-- [ ] Like/comment functionality – ~40%
+- [ ] Like/comment functionality – ~60% (basic like/unlike working)
 - [ ] File uploads & previews – ~40%
 - [ ] Responsive layout & polish – ~60%
 - [ ] Test coverage (Vitest/unit/ui) – ~35%
@@ -36,7 +36,7 @@ A prototype social platform where users can register, share posts with optional 
 - [x] CI/CD pipelines (GitHub Actions) – 100%
 
 ### 📄 Documentation
-- [ ] README accuracy – ~85%
+- [ ] README accuracy – ~90%
 - [ ] API reference in README – ~90%
 - [ ] INSTALLATION.md completeness – ~65%
 - [x] .env.example coverage – 100%
@@ -55,6 +55,7 @@ A prototype social platform where users can register, share posts with optional 
 - React UI built with Vite and Tailwind CSS
 - Components for navigation, posts, comments, modals and upload previews
 - Connects to the API for authentication and post feeds
+- Like/unlike posts from the feed
 
 ## Technologies
 - **Backend:** Node.js, NestJS, TypeScript, Passport, JWT
