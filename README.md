@@ -1,87 +1,58 @@
 # bojex.online
 
-A prototype social platform where users can register, share posts with optional media, like and comment on posts, and follow other users. The repository is split into a NestJS backend and a React frontend.
+![Build](https://img.shields.io/badge/build-pending-lightgrey)
+![Code Style](https://img.shields.io/badge/code_style-prettier-blue)
+![License](https://img.shields.io/badge/license-MIT-brightgreen)
+![Progress](https://img.shields.io/badge/progress-25%25-orange)
+
+Prototype social platform with a NestJS backend and a React/Vite/Tailwind frontend.
 
 ## Features
-
-### Backend
-- Email/password registration and JWT based login
-- Retrieve user profiles and follow/unfollow other users
-- Create text posts with optional media upload; list and view posts
+- Email/password registration and JWT login
+- Create text posts with optional media
 - Like/unlike and comment on posts
-- All data is stored in-memory and resets on server restart
+- View profiles and follow/unfollow users
 
-### Frontend
-- React UI built with Vite and Tailwind CSS
-- Components for navigation, posts, comments, modals and upload previews
-- Demo app renders a sample post and lets you submit comments locally (no API integration yet)
+### Limitations
+- All data lives in memory and resets on restart
+- Frontend demo does not call the API yet
+- Comments and likes modules are placeholders; functionality lives in the posts service
 
-## Technologies
-- **Backend:** Node.js, NestJS, TypeScript, Passport, JWT
-- **Frontend:** React 18, Vite, Tailwind CSS, Heroicons
+## Architecture
+- **Backend:** NestJS + TypeScript, multer uploads served from `/uploads`
+- **Frontend:** React 18 + Vite + Tailwind CSS components
 
-## Installation
+## Installation & Setup
 
-### Requirements
-- Node.js 18+
-- npm
-- (Optional) MongoDB – configuration exists but the prototype stores data in memory
-
-### Backend Setup
+### Backend (`http://localhost:3000`)
 1. `cd backend`
 2. `npm install`
-3. Create a `.env` file:
-
+3. create `.env`:
    ```env
    PORT=3000
-   JWT_SECRET=your-secret
+   JWT_SECRET=dev-secret
    MONGO_URI=mongodb://localhost:27017/bojex
    USE_MONGO=false
    ```
 4. `npm start`
 
-The server listens on `http://localhost:3000` by default. Uploaded files are stored in `backend/uploads` and served from `/uploads`.
+Uploads land in `backend/uploads/` and are served from `/uploads`.
 
-### Frontend Setup
+### Frontend (`http://localhost:5173`)
 1. `cd frontend`
 2. `npm install`
-3. (Optional) create a `.env` file with:
-
+3. optional `.env`:
    ```env
    VITE_API_URL=http://localhost:3000
    ```
-
 4. `npm run dev`
 
-The Vite dev server starts on `http://localhost:5173`. The demo UI runs locally and only attempts API calls if `VITE_API_URL` is set.
-
-## Folder Structure
-```
-backend/
-  src/
-    auth/
-    users/
-    posts/
-    comments/
-    likes/
-    common/
-    config/
-frontend/
-  src/
-    components/
-    App.jsx
-    main.jsx
-```
-
 ## Usage
-
-### Basic Flow
 1. Register a user
-2. Log in to obtain a JWT access token
-3. Use the token to create posts, like and comment on posts, and follow other users
+2. Log in to obtain a JWT
+3. Use the token for posts, likes, comments and follows
 
-### Example Requests
-
+### Example requests
 Register:
 ```bash
 curl -X POST http://localhost:3000/auth/register \
@@ -96,7 +67,7 @@ curl -X POST http://localhost:3000/auth/login \
   -d '{"email":"alice@example.com","password":"secret"}'
 ```
 
-Create Post:
+Create post:
 ```bash
 curl -X POST http://localhost:3000/posts \
   -H "Authorization: Bearer <TOKEN>" \
@@ -104,13 +75,13 @@ curl -X POST http://localhost:3000/posts \
   -F media=@image.png
 ```
 
-Like Post:
+Like post:
 ```bash
 curl -X POST http://localhost:3000/posts/<POST_ID>/like \
   -H "Authorization: Bearer <TOKEN>"
 ```
 
-Comment on Post:
+Comment on post:
 ```bash
 curl -X POST http://localhost:3000/posts/<POST_ID>/comments \
   -H "Authorization: Bearer <TOKEN>" \
@@ -118,43 +89,59 @@ curl -X POST http://localhost:3000/posts/<POST_ID>/comments \
   -d '{"content":"Nice!"}'
 ```
 
-Follow User:
+Follow user:
 ```bash
 curl -X POST http://localhost:3000/users/<USER_ID>/follow \
   -H "Authorization: Bearer <TOKEN>"
 ```
 
-## API Reference
-
+## API
 ### Auth
-- `POST /auth/register` – create account. Body: `{ email, password }`. Returns user without password.
-- `POST /auth/login` – authenticate and receive `{ access_token }`.
-- `POST /auth/google` – placeholder endpoint that responds with `501 {"status":"not_implemented"}`.
-- `POST /auth/discord` – placeholder endpoint that responds with `501 {"status":"not_implemented"}`.
+- `POST /auth/register` – create account
+- `POST /auth/login` – return `{ access_token }`
+- `POST /auth/google` – 501 placeholder
+- `POST /auth/discord` – 501 placeholder
 
 ### Users
-- `GET /users/:id` – get public profile.
-- `POST /users/:id/follow` – toggle follow/unfollow and return `{ following: boolean }` (requires JWT).
+- `GET /users/:id` – public profile
+- `POST /users/:id/follow` – toggle follow/unfollow
 
 ### Posts
-- `POST /posts` – create post with `text` and optional `media` (multipart). Requires JWT.
-- `GET /posts` – list all posts.
-- `GET /posts/:id` – view a post.
-- `POST /posts/:id/like` – like/unlike a post and return `{ liked, likes }` (requires JWT).
-- `POST /posts/:id/comments` – add a comment with `{ content }` (requires JWT).
+- `POST /posts` – create post (multipart)
+- `GET /posts` – list all posts
+- `GET /posts/:id` – view a post
+- `POST /posts/:id/like` – like/unlike a post
+- `POST /posts/:id/comments` – add a comment
 
-## Environment Variables
-- `PORT` – server port, default `3000`.
-- `JWT_SECRET` – secret used to sign JWTs.
-- `MONGO_URI` – MongoDB connection string (unused in the prototype).
-- `USE_MONGO` – set to `true` to enable future MongoDB integration; defaults to `false`.
+## Project Status
+| Area | Progress |
+| --- | --- |
+| Backend core (auth, posts, comments, likes, follows) | 70% |
+| Persistence (DB integration vs in-memory) | 10% |
+| Media handling (uploads/serving) | 50% |
+| Frontend UI | 40% |
+| Frontend ↔ API integration | 0% |
+| Testing (unit/e2e) | 0% |
+| CI/CD & Deploy | 0% |
+| Docs | 30% |
+| **Overall** | **25%** |
 
-## Deployment Notes
-- Build the frontend with `cd frontend && npm run build` (output in `frontend/dist`).
-- Run the backend with `cd backend && npm start`.
-- Ensure the `uploads/` directory is writable if you enable media uploads in production.
+*Percentages are conservative estimates based on a code scan; no hidden work on DB, tests or CI is assumed.*
+
+## Roadmap
+- Integrate frontend with API
+- Replace in-memory storage with MongoDB
+- Add media validation and storage service
+- Implement unit and e2e tests
+- Set up CI/CD pipeline
+- Deploy preview/staging environment
+- Expand documentation and changelog
+
+## Contributing
+Contributions are welcome! Fork the repo and open a pull request.
 
 ## License
-
 MIT
 
+## Changelog
+Coming soon.
