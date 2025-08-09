@@ -22,7 +22,7 @@ A prototype social platform where users can register, share posts with optional 
 - [ ] Test coverage (Jest/unit/integration) – ~40%
 
 ### 🎨 Frontend
-- [ ] Authentication forms & routing – ~50% (login implemented)
+- [ ] Authentication forms & routing – ~75% (login & register implemented)
 - [ ] Post feed & UI integration – ~70%
 - [ ] Like/comment functionality – ~40%
 - [ ] File uploads & previews – ~40%

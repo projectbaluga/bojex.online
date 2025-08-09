@@ -1,13 +1,15 @@
 import { useState } from 'react';
-import { login } from '../api';
+import { login, register } from '../api';
 
 export default function AuthForm({ onSuccess }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [mode, setMode] = useState('login');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await login(email, password);
+    const fn = mode === 'login' ? login : register;
+    const res = await fn(email, password);
     onSuccess?.(res);
   };
 
@@ -26,9 +28,18 @@ export default function AuthForm({ onSuccess }) {
         onChange={(e) => setPassword(e.target.value)}
         className="w-full border p-2"
       />
-      <button type="submit" className="bg-primary text-white px-4 py-2 rounded">
-        Login
-      </button>
+      <div className="space-y-2">
+        <button type="submit" className="bg-primary text-white px-4 py-2 rounded w-full">
+          {mode === 'login' ? 'Login' : 'Register'}
+        </button>
+        <button
+          type="button"
+          onClick={() => setMode(mode === 'login' ? 'register' : 'login')}
+          className="text-sm underline w-full"
+        >
+          {mode === 'login' ? 'Need an account? Register' : 'Have an account? Login'}
+        </button>
+      </div>
     </form>
   );
 }
