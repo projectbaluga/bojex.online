@@ -43,3 +43,22 @@ export async function unlikePost(id, token) {
   if (!res.ok) throw new Error('Failed to unlike post');
   return res.json();
 }
+
+export async function getComments(id) {
+  const res = await fetch(`${API_URL}/posts/${id}/comments`);
+  if (!res.ok) throw new Error('Failed to fetch comments');
+  return res.json();
+}
+
+export async function addComment(id, content, token) {
+  const res = await fetch(`${API_URL}/posts/${id}/comments`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ content }),
+  });
+  if (!res.ok) throw new Error('Failed to add comment');
+  return res.json();
+}

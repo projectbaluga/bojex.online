@@ -20,6 +20,7 @@ function App() {
             createdAt: p.createdAt,
             likesCount: p.likes.length,
             liked: auth.userId ? p.likes.includes(auth.userId) : false,
+            commentsCount: p.comments.length,
           })),
         );
       })
@@ -74,7 +75,9 @@ function App() {
             timestamp={p.createdAt}
             likesCount={p.likesCount}
             liked={p.liked}
+            commentsCount={p.commentsCount}
             onToggleLike={handleToggleLike}
+            authToken={auth.token}
           />
         ))}
       </main>

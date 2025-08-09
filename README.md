@@ -9,7 +9,7 @@ A prototype social platform where users can register, share posts with optional 
 | Area | Progress |
 |------|----------|
 | Backend | ~85% |
-| Frontend | ~55% |
+| Frontend | ~60% |
 | DevOps & Tooling | ~90% |
 | Documentation | ~75% |
 
@@ -24,7 +24,7 @@ A prototype social platform where users can register, share posts with optional 
 ### 🎨 Frontend
 - [ ] Authentication forms & routing – ~75% (login & register implemented)
 - [ ] Post feed & UI integration – ~70%
-- [ ] Like/comment functionality – ~60% (basic like/unlike working)
+- [ ] Like/comment functionality – ~80% (like/unlike and add comments)
 - [ ] File uploads & previews – ~40%
 - [ ] Responsive layout & polish – ~60%
 - [ ] Test coverage (Vitest/unit/ui) – ~35%
@@ -56,6 +56,7 @@ A prototype social platform where users can register, share posts with optional 
 - Components for navigation, posts, comments, modals and upload previews
 - Connects to the API for authentication and post feeds
 - Like/unlike posts from the feed
+- Comment on posts from the feed
 
 ## Technologies
 - **Backend:** Node.js, NestJS, TypeScript, Passport, JWT
