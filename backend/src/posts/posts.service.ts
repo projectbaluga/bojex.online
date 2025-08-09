@@ -32,12 +32,15 @@ export class PostsService {
 
   toggleLike(id: string, userId: string) {
     const post = this.findOne(id);
+    let liked: boolean;
     if (post.likes.has(userId)) {
       post.likes.delete(userId);
+      liked = false;
     } else {
       post.likes.add(userId);
+      liked = true;
     }
-    return { likes: post.likes.size };
+    return { liked, likes: post.likes.size };
   }
 
   addComment(id: string, authorId: string, content: string) {
