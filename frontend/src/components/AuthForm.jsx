@@ -8,6 +8,10 @@ export default function AuthForm({ onSuccess }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!import.meta.env.VITE_API_URL) {
+      console.warn('API URL not configured');
+      return;
+    }
     const fn = mode === 'login' ? login : register;
     const res = await fn(email, password);
     onSuccess?.(res);

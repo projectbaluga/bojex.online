@@ -1,7 +1,14 @@
-const API_URL = import.meta.env.VITE_API_URL;
+function getApiUrl() {
+  return import.meta.env.VITE_API_URL;
+}
+
+function ensureApiUrl() {
+  if (!getApiUrl()) throw new Error('API URL not configured');
+}
 
 export async function login(email, password) {
-  const res = await fetch(`${API_URL}/auth/login`, {
+  ensureApiUrl();
+  const res = await fetch(`${getApiUrl()}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
@@ -11,7 +18,8 @@ export async function login(email, password) {
 }
 
 export async function register(email, password) {
-  const res = await fetch(`${API_URL}/auth/register`, {
+  ensureApiUrl();
+  const res = await fetch(`${getApiUrl()}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
@@ -21,7 +29,8 @@ export async function register(email, password) {
 }
 
 export async function getPosts() {
-  const res = await fetch(`${API_URL}/posts`);
+  ensureApiUrl();
+  const res = await fetch(`${getApiUrl()}/posts`);
   if (!res.ok) throw new Error('Failed to fetch posts');
   return res.json();
 }

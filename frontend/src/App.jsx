@@ -7,7 +7,9 @@ function App() {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    getPosts().then(setPosts).catch(console.error);
+    if (import.meta.env.VITE_API_URL) {
+      getPosts().then(setPosts).catch(console.error);
+    }
   }, []);
 
   return (

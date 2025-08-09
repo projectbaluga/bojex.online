@@ -2,6 +2,7 @@ import { vi, beforeEach, it, expect } from 'vitest';
 import { getPosts } from './api';
 
 beforeEach(() => {
+  import.meta.env.VITE_API_URL = 'http://test';
   global.fetch = vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve([]) });
 });
 

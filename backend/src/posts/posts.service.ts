@@ -1,85 +1,60 @@
-import {
-  Injectable,
-  NotFoundException,
-  ForbiddenException,
-} from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
-import { Post, PostDocument, Comment } from './schemas/post.schema';
+import { Post, Comment } from '../common/interfaces/post.interface';
 
 @Injectable()
 export class PostsService {
-  constructor(@InjectModel(Post.name) private postModel: Model<PostDocument>) {}
+  private posts: Post[] = [];
 
   async create(authorId: string, text: string, mediaUrl?: string): Promise<Post> {
-    const post = await this.postModel.create({ authorId, text, mediaUrl });
-    return post.toObject();
+    const post: Post = {
+      id: uuid(),
+      authorId,
+      text,
+      mediaUrl,
+      likes: [],
+      comments: [],
+      createdAt: new Date(),
+    };
+    this.posts.push(post);
+    return post;
   }
 
   async findAll(): Promise<Post[]> {
-    const posts = await this.postModel.find().exec();
-    return posts.map((p) => p.toObject());
+    return this.posts;
   }
 
   async findOne(id: string): Promise<Post> {
-    const post = await this.postModel.findById(id).exec();
+    const post = this.posts.find((p) => p.id === id);
     if (!post) throw new NotFoundException('Post not found');
-    return post.toObject();
+    return post;
   }
 
   async likePost(id: string, userId: string) {
-    const res = await this.postModel
-      .findByIdAndUpdate(
-        id,
-        { $addToSet: { likes: userId } },
-        { new: true },
-      )
-      .exec();
-    if (!res) throw new NotFoundException('Post not found');
-    return { likes: res.likes.length };
-  }
-
-  async unlikePost(id: string, userId: string) {
-    const res = await this.postModel
-      .findByIdAndUpdate(
-        id,
-        { $pull: { likes: userId } },
-        { new: true },
-      )
-      .exec();
-    if (!res) throw new NotFoundException('Post not found');
-    return { likes: res.likes.length };
+    const post = await this.findOne(id);
+    const liked = post.likes.includes(userId);
+    if (liked) {
+      post.likes = post.likes.filter((u) => u !== userId);
+    } else {
+      post.likes.push(userId);
+    }
+    return { liked: !liked, likes: post.likes.length };
   }
 
   async addComment(id: string, authorId: string, content: string) {
+    const post = await this.findOne(id);
     const comment: Comment = {
       id: uuid(),
       authorId,
       content,
       createdAt: new Date(),
     };
-    const res = await this.postModel
-      .findByIdAndUpdate(
-        id,
-        { $push: { comments: comment } },
-        { new: true },
-      )
-      .exec();
-    if (!res) throw new NotFoundException('Post not found');
+    post.comments.push(comment);
     return comment;
   }
 
-  async getComments(
-    id: string,
-    page = 1,
-    limit = 10,
-    sort: 'latest' | 'oldest' = 'latest',
-  ) {
-    const post = await this.postModel
-      .findById(id, { comments: 1 })
-      .exec();
-    if (!post) throw new NotFoundException('Post not found');
+  async getComments(id: string, page = 1, limit = 10, sort: 'latest' | 'oldest' = 'latest') {
+    const post = await this.findOne(id);
     const sorted = [...post.comments].sort((a, b) =>
       sort === 'latest'
         ? b.createdAt.getTime() - a.createdAt.getTime()
@@ -91,26 +66,22 @@ export class PostsService {
   }
 
   async removeComment(postId: string, commentId: string, userId: string) {
-    const post = await this.postModel.findById(postId).exec();
-    if (!post) throw new NotFoundException('Post not found');
+    const post = await this.findOne(postId);
     const comment = post.comments.find((c) => c.id === commentId);
     if (!comment) throw new NotFoundException('Comment not found');
     if (comment.authorId !== userId && post.authorId !== userId) {
       throw new ForbiddenException('Cannot delete this comment');
     }
-    await this.postModel
-      .updateOne({ _id: postId }, { $pull: { comments: { id: commentId } } })
-      .exec();
+    post.comments = post.comments.filter((c) => c.id !== commentId);
     return { deleted: true };
   }
 
   async remove(id: string, userId: string) {
-    const post = await this.postModel.findById(id).exec();
-    if (!post) throw new NotFoundException('Post not found');
+    const post = await this.findOne(id);
     if (post.authorId !== userId) {
       throw new ForbiddenException('Cannot delete this post');
     }
-    await post.deleteOne();
+    this.posts = this.posts.filter((p) => p.id !== id);
     return { deleted: true };
   }
 }

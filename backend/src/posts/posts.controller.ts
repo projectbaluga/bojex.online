@@ -4,13 +4,13 @@ import {
   Get,
   Param,
   Post,
-  Delete,
   Req,
   UploadedFile,
   UseGuards,
   UseInterceptors,
   Query,
   HttpCode,
+  Delete,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PostsService } from './posts.service';
@@ -42,7 +42,7 @@ export class PostsController {
 
   @Get(':id')
   findOne(
-    @Param('id', new ZodValidationPipe(z.string().length(24))) id: string,
+    @Param('id', new ZodValidationPipe(z.string().uuid())) id: string,
   ) {
     return this.postsService.findOne(id);
   }
@@ -51,25 +51,16 @@ export class PostsController {
   @Post(':id/like')
   @HttpCode(200)
   like(
-    @Param('id', new ZodValidationPipe(z.string().length(24))) id: string,
+    @Param('id', new ZodValidationPipe(z.string().uuid())) id: string,
     @Req() req: any,
   ) {
     return this.postsService.likePost(id, req.user.userId);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete(':id/like')
-  unlike(
-    @Param('id', new ZodValidationPipe(z.string().length(24))) id: string,
-    @Req() req: any,
-  ) {
-    return this.postsService.unlikePost(id, req.user.userId);
-  }
-
-  @UseGuards(JwtAuthGuard)
   @Post(':id/comments')
   comment(
-    @Param('id', new ZodValidationPipe(z.string().length(24))) id: string,
+    @Param('id', new ZodValidationPipe(z.string().uuid())) id: string,
     @Req() req: any,
     @Body(new ZodValidationPipe(z.object({ content: z.string().min(1).max(200) })))
     body: { content: string },
@@ -80,7 +71,7 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @Delete(':postId/comments/:commentId')
   deleteComment(
-    @Param('postId', new ZodValidationPipe(z.string().length(24))) postId: string,
+    @Param('postId', new ZodValidationPipe(z.string().uuid())) postId: string,
     @Param('commentId', new ZodValidationPipe(z.string().uuid())) commentId: string,
     @Req() req: any,
   ) {
@@ -89,7 +80,7 @@ export class PostsController {
 
   @Get(':id/comments')
   getComments(
-    @Param('id', new ZodValidationPipe(z.string().length(24))) id: string,
+    @Param('id', new ZodValidationPipe(z.string().uuid())) id: string,
     @Query(
       new ZodValidationPipe(
         z.object({
@@ -111,7 +102,7 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   remove(
-    @Param('id', new ZodValidationPipe(z.string().length(24))) id: string,
+    @Param('id', new ZodValidationPipe(z.string().uuid())) id: string,
     @Req() req: any,
   ) {
     return this.postsService.remove(id, req.user.userId);

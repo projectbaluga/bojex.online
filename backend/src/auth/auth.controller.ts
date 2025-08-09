@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards, Req } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards, Req, Get, NotImplementedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -17,5 +17,15 @@ export class AuthController {
   @Post('login')
   login(@Body() _dto: LoginDto, @Req() req: any) {
     return this.authService.login(req.user);
+  }
+
+  @Get('google')
+  google() {
+    throw new NotImplementedException();
+  }
+
+  @Get('discord')
+  discord() {
+    throw new NotImplementedException();
   }
 }

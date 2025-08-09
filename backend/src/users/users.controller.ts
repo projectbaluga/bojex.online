@@ -21,7 +21,7 @@ export class UsersController {
 
   @Get(':id')
   async getProfile(
-    @Param('id', new ZodValidationPipe(z.string().length(24))) id: string,
+    @Param('id', new ZodValidationPipe(z.string().uuid())) id: string,
   ) {
     const { password, ...user } = await this.usersService.findById(id);
     return user;
@@ -30,7 +30,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Post(':id/follow')
   follow(
-    @Param('id', new ZodValidationPipe(z.string().length(24))) id: string,
+    @Param('id', new ZodValidationPipe(z.string().uuid())) id: string,
     @Req() req: any,
   ) {
     return this.usersService.follow(req.user.userId, id);
@@ -39,7 +39,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   update(
-    @Param('id', new ZodValidationPipe(z.string().length(24))) id: string,
+    @Param('id', new ZodValidationPipe(z.string().uuid())) id: string,
     @Req() req: any,
     @Body() dto: UpdateUserDto,
   ) {

@@ -1,9 +1,13 @@
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
-import { vi, it, expect, afterEach } from 'vitest';
+import { vi, it, expect, afterEach, beforeEach } from 'vitest';
 import AuthForm from '../AuthForm';
 import * as api from '../../api';
 
 vi.mock('../../api');
+
+beforeEach(() => {
+  import.meta.env.VITE_API_URL = 'http://test';
+});
 
 afterEach(() => {
   cleanup();
